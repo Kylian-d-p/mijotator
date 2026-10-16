@@ -13,7 +13,7 @@ export default function ChargementSemaines() {
       <div aria-hidden="true" className="mx-auto max-w-6xl space-y-1 px-5 pt-8 pb-20 sm:px-8 sm:pt-10">
         {[0, 1, 2, 3].map((i) => (
           <div key={i} className="flex items-center gap-4 py-3 sm:gap-5">
-            <div className="size-12 shrink-0 rounded-full bg-flamme-pale sm:size-14" />
+            <div className="ligne-attente h-6 w-16 shrink-0 rounded-md bg-flamme-pale sm:w-20" />
             <div className="flex-1 space-y-2">
               <div
                 className="ligne-attente h-4 rounded-full bg-email-2"
