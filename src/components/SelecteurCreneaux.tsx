@@ -1,6 +1,6 @@
 "use client";
 
-import Icone from "@/components/Icone";
+import { useState } from "react";
 import {
   creneau,
   dateValide,
@@ -17,8 +17,8 @@ import {
 
 const memes = (a: Creneau[], b: Creneau[]) => a.length === b.length && a.every((c) => b.includes(c));
 
-// Planning de la semaine, comme dans un cahier de textes : une colonne par jour du programme,
-// une rangée par moment, une case à cocher par repas à prévoir
+// Planning de la semaine en plaque de cuisson : une colonne par jour du programme, une rangée
+// par moment, un feu par repas. Cocher un repas pose un couvercle sur son feu.
 export default function SelecteurCreneaux({
   debut,
   valeur,
@@ -30,6 +30,8 @@ export default function SelecteurCreneaux({
   onChange: (creneaux: Creneau[]) => void;
   disabled?: boolean;
 }) {
+  // Seuls les couvercles posés par l'utilisateur s'animent, pas ceux du chargement de la page
+  const [poses, setPoses] = useState<Creneau[]>([]);
   const dateConnue = dateValide(debut);
 
   // Week-end : samedi et dimanche réels si la date est connue, sinon les deux derniers jours
@@ -47,8 +49,13 @@ export default function SelecteurCreneaux({
     },
   ];
 
+  function changer(creneaux: Creneau[]) {
+    setPoses(creneaux.filter((c) => !valeur.includes(c)));
+    onChange(creneaux);
+  }
+
   function basculer(c: Creneau) {
-    onChange(trierCreneaux(valeur.includes(c) ? valeur.filter((v) => v !== c) : [...valeur, c]));
+    changer(trierCreneaux(valeur.includes(c) ? valeur.filter((v) => v !== c) : [...valeur, c]));
   }
 
   const nombre = valeur.length;
@@ -56,30 +63,28 @@ export default function SelecteurCreneaux({
   return (
     <div role="group" aria-labelledby="creneaux-titre" aria-describedby="creneaux-compte">
       <div className="flex items-baseline justify-between gap-4">
-        <span id="creneaux-titre" className="font-bold">
+        <span id="creneaux-titre" className="font-semibold">
           Repas à prévoir
         </span>
         <span id="creneaux-compte" aria-live="polite" className="chiffres text-sm font-semibold">
-          {nombre === 0 ? (
-            <span className="bg-surligneur-pale px-1.5 py-0.5">Aucun repas</span>
-          ) : (
-            `${nombre} repas`
-          )}
+          {nombre === 0 ? <span className="etiquette-soleil">Aucun repas</span> : `${nombre} repas`}
         </span>
       </div>
 
-      <div role="group" aria-label="Raccourcis" className="mt-2 flex flex-wrap gap-2">
+      <div role="group" aria-label="Raccourcis" className="mt-2.5 flex flex-wrap gap-2">
         {raccourcis.map(({ libelle, creneaux }) => {
           const actif = memes(valeur, creneaux);
           return (
             <button
               key={libelle}
               type="button"
-              onClick={() => onChange(creneaux)}
+              onClick={() => changer(creneaux)}
               aria-pressed={actif}
               disabled={disabled}
-              className={`min-h-10 cursor-pointer border-2 border-encre px-3.5 text-[0.95rem] font-bold transition-colors disabled:cursor-not-allowed ${
-                actif ? "bg-encre text-papier" : "bg-papier text-encre hover:bg-surligneur"
+              className={`min-h-10 cursor-pointer rounded-full px-4 text-[0.95rem] font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                actif
+                  ? "bg-fonte text-email"
+                  : "bg-email text-fonte shadow-[inset_0_0_0_2px_var(--fonte)] hover:bg-email-2"
               }`}
             >
               {libelle}
@@ -88,23 +93,26 @@ export default function SelecteurCreneaux({
         })}
       </div>
 
-      {/* Les filets du planning sont les espaces d'1 px de la grille, qui laissent voir le fond */}
-      <div className="mt-3 grid grid-cols-[3rem_repeat(7,minmax(0,1fr))] gap-px border-2 border-encre bg-filet-doux sm:grid-cols-[3.75rem_repeat(7,minmax(0,1fr))]">
-        <div className="border-b-2 border-encre bg-papier" />
+      <div
+        className={`mt-3 grid grid-cols-[2.75rem_repeat(7,minmax(0,1fr))] gap-x-0.5 gap-y-1 rounded-2xl bg-fonte p-1.5 text-email shadow-[0_14px_24px_-18px_rgb(30_26_23/0.9)] sm:grid-cols-[3.75rem_repeat(7,minmax(0,1fr))] sm:gap-x-1 sm:p-2.5 ${
+          disabled ? "opacity-60" : ""
+        }`}
+      >
+        <div />
         {JOURS.map((jour) => {
           const { semaine, date } = libelleJourCourt(debut, jour);
           return (
             <div
               key={jour}
               aria-hidden="true"
-              className={`flex flex-col items-center justify-center gap-0.5 border-b-2 border-encre px-0.5 py-2 text-center leading-none ${
-                weekEnd(jour) ? "bg-papier-2" : "bg-papier"
+              className={`flex flex-col items-center justify-center gap-0.5 rounded-lg px-0.5 py-2 text-center leading-none ${
+                weekEnd(jour) ? "bg-white/[0.07]" : ""
               }`}
             >
-              <span className="archivo-large text-[0.95rem] font-extrabold sm:text-base">J{jour}</span>
+              <span className="text-[0.95rem] font-extrabold sm:text-base">J{jour}</span>
               {dateConnue && (
                 <>
-                  <span className="text-[0.8125rem] text-encre-2">{semaine}</span>
+                  <span className="text-[0.8125rem] text-white/65">{semaine}</span>
                   <span className="chiffres text-[0.8125rem] font-semibold">{date}</span>
                 </>
               )}
@@ -114,10 +122,7 @@ export default function SelecteurCreneaux({
 
         {MOMENTS.map((moment) => (
           <div key={moment} className="contents">
-            <div
-              aria-hidden="true"
-              className="bandeau flex items-center bg-papier pl-2 text-[0.8125rem] text-encre-2 sm:pl-3"
-            >
+            <div aria-hidden="true" className="flex items-center pl-1.5 text-[0.8125rem] font-semibold text-white/70 sm:pl-2.5 sm:text-sm">
               {moment === "midi" ? "Midi" : "Soir"}
             </div>
             {JOURS.map((jour) => {
@@ -127,13 +132,9 @@ export default function SelecteurCreneaux({
               return (
                 <label
                   key={c}
-                  className={`relative flex min-h-11 items-center justify-center transition-colors duration-150 has-[:focus-visible]:shadow-[inset_0_0_0_2px_var(--encre),inset_0_0_0_6px_var(--surligneur)] sm:min-h-12 ${
-                    disabled
-                      ? "cursor-not-allowed bg-papier-2"
-                      : coche
-                        ? "cursor-pointer bg-essentiel"
-                        : "cursor-pointer bg-papier hover:bg-surligneur-pale"
-                  }`}
+                  className={`group relative flex min-h-12 items-center justify-center rounded-xl transition-colors duration-150 has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-0 has-[:focus-visible]:outline-flamme sm:min-h-14 ${
+                    disabled ? "cursor-not-allowed" : "cursor-pointer hover:bg-white/[0.06]"
+                  } ${weekEnd(jour) ? "bg-white/[0.04]" : ""}`}
                 >
                   <input
                     type="checkbox"
@@ -146,9 +147,21 @@ export default function SelecteurCreneaux({
                     {nomJour}, {moment}
                   </span>
                   {coche ? (
-                    <Icone nom="valide" className="size-5 text-encre" />
+                    <span
+                      aria-hidden="true"
+                      className={`flex size-7 items-center justify-center rounded-full bg-flamme shadow-[0_3px_6px_-2px_rgb(0_0_0/0.6)] sm:size-9 ${
+                        poses.includes(c) ? "pose" : ""
+                      }`}
+                    >
+                      <span className="size-2 rounded-full bg-fonte sm:size-2.5" />
+                    </span>
                   ) : (
-                    <span aria-hidden="true" className="size-4 border-[1.5px] border-bordure-champ" />
+                    <span
+                      aria-hidden="true"
+                      className={`size-7 rounded-full border-2 border-[#7a716a] shadow-[inset_0_0_0_4px_var(--fonte),inset_0_0_0_5.5px_#4a433d] transition-colors duration-200 sm:size-9 ${
+                        disabled ? "" : "group-hover:border-flamme"
+                      }`}
+                    />
                   )}
                 </label>
               );

@@ -74,15 +74,15 @@ export default function AttenteSemaine({ id }: { id: string }) {
   return (
     <div>
       {interrompue ? (
-        <div role="status" className="mb-8 flex max-w-3xl gap-4 border-2 border-filet px-5 py-4 sm:px-6">
+        <div role="status" className="alerte mb-8 max-w-3xl sm:px-6 sm:py-5">
           <Icone nom="revoir" className="mt-0.5 size-6 shrink-0" />
           <div>
             <p className="font-bold">La semaine est toujours en préparation</p>
-            <p className="mt-1 text-encre-2">{interrompue}</p>
+            <p className="mt-1 text-fonte-2">{interrompue}</p>
             <button
               type="button"
               onClick={() => router.refresh()}
-              className="mt-3 inline-flex cursor-pointer items-center gap-2 font-semibold underline"
+              className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-md font-semibold underline decoration-flamme"
             >
               <Icone nom="recommencer" className="size-4" />
               Recharger
@@ -90,11 +90,23 @@ export default function AttenteSemaine({ id }: { id: string }) {
           </div>
         </div>
       ) : (
-        <p role="status" className="mb-6 flex flex-wrap items-baseline gap-x-3 gap-y-1 text-encre-2">
-          <span className="archivo-large text-2xl font-extrabold text-encre">Composition des repas</span>
+        <div role="status" className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+          {/* Ça frémit : trois bulles qui montent pendant la composition */}
+          <span aria-hidden="true" className="flex h-7 items-end gap-1.5">
+            {[0, 1, 2].map((i) => (
+              <span
+                key={i}
+                className="bulle size-2.5 rounded-full bg-flamme"
+                style={{ animationDelay: `${i * 260}ms` }}
+              />
+            ))}
+          </span>
+          <span className="titre-moyen text-2xl sm:text-[1.75rem]">Composition des repas</span>
           <span className="sr-only">en cours. </span>
-          Quelques secondes en général. Vous pouvez quitter cette page : un e-mail vous préviendra.
-        </p>
+          <span className="basis-full text-fonte-2 sm:basis-auto">
+            Quelques secondes en général. Vous pouvez quitter cette page : un e-mail vous préviendra.
+          </span>
+        </div>
       )}
       <SqueletteSemaine />
     </div>

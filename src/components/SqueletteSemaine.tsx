@@ -1,21 +1,27 @@
 const LARGEURS = ["62%", "48%", "71%", "55%", "66%", "44%", "58%"];
 
-// Silhouette de la grille des repas pendant la génération ou le chargement
+// Silhouette de la grille des repas pendant la génération ou le chargement : des couvercles pâles
 export default function SqueletteSemaine() {
   return (
-    <div className="border-t-2 border-filet" aria-hidden="true">
+    <div aria-hidden="true">
       {LARGEURS.map((largeur, i) => (
         <div
           key={i}
-          className="grid gap-3 border-b border-filet-doux py-5 md:grid-cols-[11rem_1fr] md:gap-6"
+          className="grid gap-3 border-b border-trait py-6 first:pt-2 last:border-b-0 md:grid-cols-[11rem_1fr] md:gap-8"
         >
-          <div className="h-6 w-32 bg-papier-2 md:mt-3" />
-          <div className="flex items-center gap-4 border-2 border-filet-doux px-4 py-4 sm:px-5">
-            <div className="h-5 w-12 shrink-0 bg-essentiel" />
-            <div
-              className="ligne-attente h-4 bg-essentiel/25"
-              style={{ width: largeur, animationDelay: `${i * 110}ms` }}
-            />
+          <div className="space-y-2 md:pt-2">
+            <div className="h-6 w-24 rounded-md bg-email-2" />
+            <div className="h-4 w-20 rounded-md bg-email-2" />
+          </div>
+          <div className="flex items-center gap-4 rounded-2xl border-b-4 border-email-3 bg-flamme-pale px-4 py-4 sm:px-5">
+            <div className="flex-1 space-y-2">
+              <div
+                className="ligne-attente h-4 rounded-full bg-flamme/30"
+                style={{ width: largeur, animationDelay: `${i * 110}ms` }}
+              />
+              <div className="h-3 w-28 rounded-full bg-flamme/15" />
+            </div>
+            <div className="size-9 shrink-0 rounded-full bg-flamme/20" />
           </div>
         </div>
       ))}

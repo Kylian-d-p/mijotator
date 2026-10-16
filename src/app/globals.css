@@ -1,88 +1,97 @@
 @import "tailwindcss";
 
 /*
- * Mijotator reprend l'univers imprimé de Revizator (cahier parascolaire).
- * Papier blanc, encre noire et trois encres quadri, chacune avec un seul rôle :
- * cyan = repas (grille de la semaine), magenta = courses (liste cochable),
- * jaune = surligneur (sélection, survol, signal d'état).
- * Les noms des jetons (essentiel, teste) sont ceux de Revizator.
+ * Mijotator : l'univers de la cocotte en fonte émaillée.
+ * Chaque page est une cocotte : un bandeau en émail coloré (le couvercle), un bord en fonte
+ * noire, puis l'intérieur blanc où l'on lit. Chaque émail a un seul rôle :
+ * flamme = repas, basilic = courses, soleil = étape en cours et alertes, givre = frigo.
  */
 :root {
-  --papier: #ffffff;
-  --papier-2: #f5f5f7;
-  --encre: #16161d;
-  --encre-2: #4a4a57;
-  --encre-3: #6b6b78;
-  --filet: #16161d;
-  --filet-doux: #dcdce2;
-  --bordure-champ: #8a8a96;
+  --email: #ffffff;
+  --email-2: #f4f2ef;
+  --email-3: #e9e5e0;
+  --fonte: #1e1a17;
+  --fonte-douce: #2c2723;
+  --fonte-2: #4f4842;
+  --fonte-3: #756d66;
+  --trait: #e3dfda;
+  --bord: #9a928a;
 
-  --essentiel: #00a3e0;
-  --essentiel-pale: #e6f6fc;
-  --essentiel-fonce: #0074a6;
+  --flamme: #e8541c;
+  --braise: #b83a10;
+  --flamme-pale: #fdebe2;
 
-  --teste: #e5007d;
-  --teste-pale: #fde7f2;
-  --teste-fonce: #b00060;
+  --basilic-vif: #3a8a5e;
+  --basilic: #2e6b4a;
+  --basilic-pale: #e6f2eb;
+  --basilic-eteint: #93b8a2;
 
-  --surligneur: #ffe500;
-  --surligneur-pale: #fff4a3;
+  --soleil: #f6b90a;
+  --soleil-pale: #fff2c7;
+
+  --givre: #e8f0f4;
+  --givre-bord: #9fbccb;
+  --givre-fonce: #2f5f7a;
 }
 
 @theme inline {
-  --color-papier: var(--papier);
-  --color-papier-2: var(--papier-2);
-  --color-encre: var(--encre);
-  --color-encre-2: var(--encre-2);
-  --color-encre-3: var(--encre-3);
-  --color-filet: var(--filet);
-  --color-filet-doux: var(--filet-doux);
-  --color-bordure-champ: var(--bordure-champ);
-  --color-essentiel: var(--essentiel);
-  --color-essentiel-pale: var(--essentiel-pale);
-  --color-essentiel-fonce: var(--essentiel-fonce);
-  --color-teste: var(--teste);
-  --color-teste-pale: var(--teste-pale);
-  --color-teste-fonce: var(--teste-fonce);
-  --color-surligneur: var(--surligneur);
-  --color-surligneur-pale: var(--surligneur-pale);
+  --color-email: var(--email);
+  --color-email-2: var(--email-2);
+  --color-email-3: var(--email-3);
+  --color-fonte: var(--fonte);
+  --color-fonte-douce: var(--fonte-douce);
+  --color-fonte-2: var(--fonte-2);
+  --color-fonte-3: var(--fonte-3);
+  --color-trait: var(--trait);
+  --color-bord: var(--bord);
+  --color-flamme: var(--flamme);
+  --color-braise: var(--braise);
+  --color-flamme-pale: var(--flamme-pale);
+  --color-basilic-vif: var(--basilic-vif);
+  --color-basilic: var(--basilic);
+  --color-basilic-pale: var(--basilic-pale);
+  --color-basilic-eteint: var(--basilic-eteint);
+  --color-soleil: var(--soleil);
+  --color-soleil-pale: var(--soleil-pale);
+  --color-givre: var(--givre);
+  --color-givre-bord: var(--givre-bord);
+  --color-givre-fonce: var(--givre-fonce);
 
-  --font-sans: var(--font-atkinson), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-archivo), var(--font-atkinson), ui-sans-serif, sans-serif;
+  --font-sans: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
 
   --ease-sortie: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-pose: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 html {
   color-scheme: light;
   -webkit-text-size-adjust: 100%;
+  interpolate-size: allow-keywords;
 }
 
 body {
-  background: var(--papier);
-  color: var(--encre);
+  background: var(--email);
+  color: var(--fonte);
   font-family: var(--font-sans);
   font-size: 1rem;
-  line-height: 1.6;
-  caret-color: var(--encre);
+  line-height: 1.55;
+  caret-color: var(--flamme);
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: var(--surligneur);
-  color: var(--encre);
+  background: rgb(232 84 28 / 0.28);
+  color: var(--fonte);
 }
 
-/* Les champs (.champ) ont leur propre focus, sans halo jaune */
-:focus-visible:not(.champ) {
-  outline: 2px solid var(--encre);
+:focus-visible {
+  outline: 3px solid var(--flamme);
   outline-offset: 2px;
-  box-shadow: 0 0 0 6px var(--surligneur);
 }
 
 a {
-  text-underline-offset: 0.2em;
-  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 2px;
 }
 
 h1,
@@ -95,180 +104,336 @@ p {
   text-wrap: pretty;
 }
 
+/* Barres de défilement dans les tons de la fonte */
+* {
+  scrollbar-color: var(--bord) transparent;
+  scrollbar-width: thin;
+}
+
 @layer components {
+  /* Titres coulés comme les lettres d'un couvercle : Bricolage large et grasse */
+  .titre {
+    font-weight: 800;
+    font-stretch: 100%;
+    letter-spacing: -0.02em;
+    line-height: 0.98;
+  }
+
+  .titre-moyen {
+    font-weight: 800;
+    font-stretch: 100%;
+    letter-spacing: -0.015em;
+    line-height: 1.1;
+  }
+
   .bouton {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
     min-height: 3rem;
-    padding: 0 1.25rem;
-    border: 2px solid var(--encre);
+    padding: 0 1.375rem;
+    border-radius: 0.875rem;
     font-size: 1rem;
     font-weight: 700;
     line-height: 1.2;
     text-decoration: none;
     cursor: pointer;
     transition:
-      transform 220ms var(--ease-sortie),
-      box-shadow 220ms var(--ease-sortie),
+      transform 200ms var(--ease-sortie),
+      box-shadow 200ms var(--ease-sortie),
       background-color 150ms ease,
       color 150ms ease;
   }
 
+  /* Bouton en fonte : il se soulève au survol et se repose au clic */
   .bouton-principal {
-    background: var(--encre);
-    color: var(--papier);
+    background: var(--fonte);
+    color: var(--email);
+    box-shadow: 0 10px 18px -12px rgb(30 26 23 / 0.75);
   }
 
   .bouton-principal:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px -10px rgb(22 22 29 / 0.6);
+    background: var(--fonte-douce);
+    transform: translateY(-1px);
+    box-shadow: 0 14px 22px -12px rgb(30 26 23 / 0.8);
   }
 
   .bouton-principal:active:not(:disabled) {
-    transform: translateY(0);
-    box-shadow: none;
+    transform: translateY(1px);
+    box-shadow: 0 4px 8px -6px rgb(30 26 23 / 0.7);
   }
 
   .bouton-secondaire {
-    background: var(--papier);
-    color: var(--encre);
+    background: var(--email);
+    color: var(--fonte);
+    box-shadow: inset 0 0 0 2px var(--fonte);
   }
 
   .bouton-secondaire:hover:not(:disabled) {
-    background: var(--surligneur);
+    background: var(--email-2);
+  }
+
+  /* Sur un bandeau émaillé : bouton blanc, comme l'intérieur de la cocotte */
+  .bouton-clair {
+    background: var(--email);
+    color: var(--fonte);
+    box-shadow: 0 10px 18px -12px rgb(0 0 0 / 0.6);
+  }
+
+  .bouton-clair:hover:not(:disabled) {
+    background: var(--email-2);
+    transform: translateY(-1px);
   }
 
   .bouton:disabled {
-    background: var(--papier-2);
-    border-color: var(--filet-doux);
-    color: var(--encre-3);
+    background: var(--email-2);
+    color: var(--fonte-3);
+    box-shadow: inset 0 0 0 1.5px var(--trait);
     cursor: not-allowed;
   }
 
   .champ {
     display: block;
     width: 100%;
-    border: 1.5px solid var(--bordure-champ);
-    background: var(--papier);
-    padding: 0.75rem 0.9rem;
+    border: 1.5px solid var(--bord);
+    border-radius: 0.75rem;
+    background: var(--email);
+    padding: 0.75rem 0.95rem;
     font-size: 1.0625rem;
-    line-height: 1.55;
-    color: var(--encre);
+    line-height: 1.5;
+    color: var(--fonte);
     transition:
       border-color 150ms ease,
       box-shadow 200ms var(--ease-sortie);
   }
 
   .champ::placeholder {
-    color: var(--encre-3);
+    color: var(--fonte-3);
   }
 
-  .champ:hover {
-    border-color: var(--encre-2);
+  .champ:hover:not(:disabled) {
+    border-color: var(--fonte-2);
   }
 
-  /* Focus des champs : trait d'encre plus épais, sans halo jaune */
   .champ:focus-visible {
     outline: none;
-    border-color: var(--encre);
-    box-shadow: 0 0 0 1px var(--encre);
+    border-color: var(--fonte);
+    box-shadow: 0 0 0 3px rgb(232 84 28 / 0.35);
   }
 
-  .bandeau {
-    font-family: var(--font-display);
-    font-variation-settings: "wdth" 72;
-    font-weight: 800;
-    font-size: 1.125rem;
-    letter-spacing: 0.06em;
-    line-height: 1.2;
-    text-transform: uppercase;
+  .champ:disabled {
+    background: var(--email-2);
+    cursor: not-allowed;
+  }
+
+  /* Le frigo est un champ givré */
+  .champ-givre {
+    background: var(--givre);
+    border-color: var(--givre-bord);
+  }
+
+  .champ-givre:hover:not(:disabled) {
+    border-color: var(--givre-fonce);
+  }
+
+  .champ-givre::placeholder {
+    color: #4f6f80;
+  }
+
+  /*
+   * Bandeau de tête : le couvercle émaillé de la page, avec un reflet en haut à gauche,
+   * l'ombré qui fonce vers le bas comme une cocotte Volcanique, puis le bord en fonte.
+   */
+  .bandeau-email {
+    position: relative;
+    color: var(--email);
+    border-bottom: 4px solid var(--fonte);
+    isolation: isolate;
+  }
+
+  .bandeau-flamme {
+    background:
+      radial-gradient(70% 140% at 8% -30%, rgb(255 255 255 / 0.12), transparent 60%),
+      linear-gradient(180deg, #d24a15 0%, #c2410f 42%, #a5350d 78%, #8e2a0c 100%);
+  }
+
+  .bandeau-basilic {
+    background:
+      radial-gradient(70% 140% at 8% -30%, rgb(255 255 255 / 0.1), transparent 60%),
+      linear-gradient(180deg, #367f57 0%, #2e6b4a 45%, #24583c 80%, #1f4d35 100%);
+  }
+
+  .bandeau-email :focus-visible {
+    outline-color: var(--email);
+  }
+
+  /* Puits gris clair : panneaux d'aide et états vides */
+  .puits {
+    background: var(--email-2);
+    border-radius: 1.5rem;
+  }
+
+  /* Alerte : émail soleil pâle cerclé de soleil */
+  .alerte {
+    display: flex;
+    gap: 1rem;
+    border-radius: 1rem;
+    background: var(--soleil-pale);
+    box-shadow: inset 0 0 0 1.5px var(--soleil);
+    padding: 1rem 1.25rem;
+  }
+
+  /* Étiquette d'état : soleil pour l'étape en cours */
+  .etiquette-soleil {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border-radius: 999px;
+    background: var(--soleil);
+    color: var(--fonte);
+    padding: 0.125rem 0.625rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    line-height: 1.4;
+    white-space: nowrap;
   }
 }
 
-/* Barres de défilement dans les tons du papier */
-* {
-  scrollbar-color: var(--bordure-champ) transparent;
-  scrollbar-width: thin;
-}
-
-/* Largeurs d'Archivo (axe wdth) */
-.archivo-etroit {
-  font-family: var(--font-display);
-  font-variation-settings: "wdth" 72;
-}
-
-.archivo-large {
-  font-family: var(--font-display);
-  font-variation-settings: "wdth" 112;
-}
-
-/* Chiffres d'interface (dates, compteurs) en Archivo, sans le zéro barré d'Atkinson */
+/* Chiffres d'interface : tabulaires, pour que quantités, minutes et euros s'alignent */
 .chiffres {
-  font-family: var(--font-display);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
 }
 
-/* Puce carrée des listes de « L'essentiel » */
-.puce-essentiel > li {
+/* La marque : un couvercle vu de dessus, qui se soulève au survol */
+.marque-couvercle {
+  transition: transform 320ms var(--ease-pose);
+}
+
+a:hover .marque-couvercle,
+a:focus-visible .marque-couvercle {
+  transform: translateY(-3px) rotate(-12deg);
+}
+
+/* Couvercle posé sur un feu du planning, avec un léger rebond */
+@keyframes pose {
+  from {
+    transform: translateY(-5px) scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.pose {
+  animation: pose 380ms var(--ease-pose) both;
+}
+
+/*
+ * Repas : un couvercle émaillé (le résumé) posé sur l'intérieur de la cocotte.
+ * Midi en flamme et texte en fonte, soir en braise et texte blanc.
+ */
+.repas > summary {
   position: relative;
-  padding-left: 1.5rem;
+  z-index: 1;
+  list-style: none;
+  border-radius: 1rem;
+  border-bottom: 4px solid var(--fonte);
+  box-shadow: 0 10px 16px -14px rgb(30 26 23 / 0.9);
+  transition:
+    transform 320ms var(--ease-sortie),
+    box-shadow 320ms var(--ease-sortie);
 }
 
-.puce-essentiel > li::before {
-  content: "";
-  position: absolute;
-  left: 0.15rem;
-  top: 0.62em;
-  width: 0.5rem;
-  height: 0.5rem;
-  background: var(--essentiel);
+.repas > summary::-webkit-details-marker {
+  display: none;
 }
 
-/* Surligneur : un trait jaune qui passe derrière le texte */
-.surligne {
-  background-image: linear-gradient(
-    transparent 52%,
-    var(--surligneur) 52%,
-    var(--surligneur) 92%,
-    transparent 92%
-  );
+.repas[data-moment="midi"] > summary {
+  background: var(--flamme);
+  color: var(--fonte);
+}
+
+.repas[data-moment="soir"] > summary {
+  background: var(--braise);
+  color: var(--email);
+}
+
+.repas > summary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 20px -14px rgb(30 26 23 / 0.9);
+}
+
+/* Ouvert, le couvercle reste soulevé au-dessus de l'intérieur, son ombre portée plus profonde */
+.repas[open] > summary {
+  transform: translateY(-6px);
+  box-shadow: 0 22px 24px -16px rgb(30 26 23 / 0.95);
+}
+
+/* L'intérieur s'ouvre en glissant, là où le navigateur le permet */
+.repas::details-content {
+  block-size: 0;
+  overflow: clip;
+  transition:
+    block-size 420ms var(--ease-sortie),
+    content-visibility 420ms allow-discrete;
+}
+
+.repas[open]::details-content {
+  block-size: auto;
+}
+
+.repas .bouton-couvercle {
+  transition: transform 300ms var(--ease-sortie);
+}
+
+.repas[open] .bouton-couvercle {
+  transform: rotate(45deg);
+}
+
+/* Article coché : un trait le barre de gauche à droite */
+.barre {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0 55%;
   background-repeat: no-repeat;
-  background-size: 0% 100%;
-  transition: background-size 380ms var(--ease-sortie);
+  background-size: 0% 2px;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
+  transition:
+    background-size 320ms var(--ease-sortie),
+    color 200ms ease;
 }
 
-.surligne-toujours,
-a:hover .surligne,
-a:focus-visible .surligne {
-  background-size: 100% 100%;
+.barre[data-barre="true"] {
+  background-size: 100% 2px;
 }
 
-.surligne-toujours {
-  background-image: linear-gradient(
-    transparent 50%,
-    var(--surligneur-pale) 50%,
-    var(--surligneur-pale) 94%,
-    transparent 94%
-  );
+/* Bulles de frémissement pendant l'attente */
+@keyframes fremir {
+  0% {
+    transform: translateY(4px) scale(0.5);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-12px) scale(1);
+    opacity: 0;
+  }
 }
 
-/* Points de conduite du sommaire */
-.points-conduite {
-  background-image: radial-gradient(circle, var(--encre-3) 1px, transparent 1.4px);
-  background-size: 8px 4px;
-  background-repeat: repeat-x;
-  background-position: left bottom 0.42em;
+.bulle {
+  animation: fremir 1.5s ease-out infinite;
 }
 
-/* Lignes de texte en attente pendant la génération */
+/* Silhouettes en attente pendant le chargement */
 @keyframes respiration {
   0%,
   100% {
-    opacity: 0.45;
+    opacity: 0.5;
   }
   50% {
     opacity: 1;
@@ -279,29 +444,23 @@ a:focus-visible .surligne {
   animation: respiration 1.6s ease-in-out infinite;
 }
 
-/* Corrigé tête-bêche : il pivote pour se lire (au geste seulement) */
-.corrige {
-  transform: rotate(180deg);
-}
-
-.corrige[data-anime="true"] {
-  transition:
-    transform 700ms var(--ease-sortie),
-    color 400ms ease;
-}
-
-.corrige[data-retourne="true"] {
-  transform: rotate(0deg);
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .corrige,
-  .surligne {
-    transition: none;
-  }
-
+  .pose,
+  .bulle,
   .ligne-attente {
     animation: none;
+  }
+
+  .bulle {
+    opacity: 1;
+  }
+
+  .barre,
+  .marque-couvercle,
+  .repas > summary,
+  .repas .bouton-couvercle,
+  .repas::details-content {
+    transition: none;
   }
 }
 
@@ -310,9 +469,15 @@ a:focus-visible .surligne {
     display: none !important;
   }
 
-  .corrige {
-    transform: rotate(180deg) !important;
-    color: var(--encre-2) !important;
+  /* À l'impression, le bandeau devient un simple titre, sans aplat */
+  .bandeau-email {
+    background: none !important;
+    color: var(--fonte) !important;
+    border-bottom-width: 2px;
+  }
+
+  .bandeau-email * {
+    color: var(--fonte) !important;
   }
 
   * {

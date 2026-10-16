@@ -1,3 +1,4 @@
+import BandeauPage from "@/components/BandeauPage";
 import FormulaireSemaine, { type ValeursFormulaire } from "@/components/FormulaireSemaine";
 import ModeEmploi from "@/components/ModeEmploi";
 import { estCreneau, prochainLundi, TOUS_LES_SOIRS } from "@/lib/semaine";
@@ -25,22 +26,19 @@ export default async function Home() {
   };
 
   return (
-    <main className="mx-auto max-w-6xl px-5 pt-10 pb-20 sm:px-8 sm:pt-14">
-      <div className="mb-10 max-w-3xl sm:mb-12">
-        <h1 className="archivo-large text-[clamp(2.5rem,7vw,4.25rem)] leading-[0.98] font-extrabold tracking-tight">
-          Nouvelle semaine
-        </h1>
-        <p className="mt-4 text-lg text-encre-2 sm:text-xl">
-          Donnez vos contraintes, obtenez les{" "}
-          <span className="surligne surligne-toujours text-encre">repas de la semaine</span> et
-          la <span className="surligne surligne-toujours text-encre">liste de courses</span> qui
-          va avec.
+    <main>
+      <BandeauPage titre="Nouvelle semaine">
+        <p className="mt-4 text-lg sm:text-xl">
+          Donnez vos contraintes, obtenez les <strong>repas de la semaine</strong> et la{" "}
+          <strong>liste de courses</strong> qui va avec.
         </p>
-      </div>
+      </BandeauPage>
 
-      <FormulaireSemaine valeursInitiales={valeursInitiales}>
-        <ModeEmploi />
-      </FormulaireSemaine>
+      <div className="mx-auto max-w-6xl px-5 pt-10 pb-20 sm:px-8 sm:pt-12">
+        <FormulaireSemaine valeursInitiales={valeursInitiales}>
+          <ModeEmploi />
+        </FormulaireSemaine>
+      </div>
     </main>
   );
 }

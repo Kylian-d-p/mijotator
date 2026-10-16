@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import BandeauPage from "@/components/BandeauPage";
 import BoutonImprimer from "@/components/BoutonImprimer";
 import Icone from "@/components/Icone";
 import ListeCourses, { type ArticleEnregistre } from "@/components/ListeCourses";
@@ -46,45 +46,44 @@ export default async function Courses({
   const frigo = semaine.frigo_releve ?? [];
 
   return (
-    <main className="mx-auto max-w-6xl px-5 pt-8 pb-20 sm:px-8 sm:pt-10">
-      <Link
-        href={`/semaines/${id}`}
-        className="sans-impression inline-flex items-center gap-2 font-semibold text-encre-2 no-underline hover:text-encre"
+    <main>
+      <BandeauPage
+        email="basilic"
+        titre="Liste de courses"
+        retour={{ href: `/semaines/${id}`, libelle: titreSemaine(semaine.debut) }}
+        actions={articles.length > 0 && <BoutonImprimer className="bouton-clair" />}
       >
-        <Icone nom="retour" className="size-4" />
-        {titreSemaine(semaine.debut)}
-      </Link>
+        <p className="mt-3 text-lg">{titreSemaine(semaine.debut)}</p>
+      </BandeauPage>
 
-      <header className="mt-6 flex flex-wrap items-end justify-between gap-x-8 gap-y-5 border-b-2 border-filet pb-7 sm:mt-8">
-        <div>
-          <h1 className="archivo-large text-[clamp(1.875rem,4.6vw,3.25rem)] leading-[1.04] font-extrabold tracking-tight">
-            Liste de courses
-          </h1>
-          <p className="mt-3 text-encre-2">{titreSemaine(semaine.debut)}</p>
-        </div>
-        {articles.length > 0 && <BoutonImprimer />}
-      </header>
-
-      <div className="mt-8 sm:mt-10">
+      <div className="mx-auto max-w-6xl px-5 pt-8 pb-20 sm:px-8 sm:pt-10">
         <ListeCourses semaineId={id} articlesInitiaux={articles} />
-      </div>
 
-      {frigo.length > 0 && (
-        <section aria-labelledby="frigo" className="mt-12 max-w-3xl border-t border-filet-doux pt-6">
-          <h2 id="frigo" className="bandeau text-encre-2">
-            Déjà dans votre frigo
-          </h2>
-          <p className="mt-2 text-encre-2">Utilisé dans les repas et retiré de la liste, dans la limite de ces quantités :</p>
-          <ul className="mt-3 flex flex-wrap gap-2">
-            {frigo.map((produit, i) => (
-              <li key={i} className="border border-filet-doux px-3 py-1 text-[0.95rem]">
-                {produit.nom}{" "}
-                <span className="chiffres text-encre-2">{afficherQuantite(produit.quantite, produit.unite)}</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+        {frigo.length > 0 && (
+          <section aria-labelledby="frigo" className="mt-4 max-w-3xl rounded-3xl bg-givre px-6 py-6 sm:px-8">
+            <h2 id="frigo" className="titre-moyen flex items-center gap-2.5 text-xl text-givre-fonce">
+              <Icone nom="flocon" className="size-5" />
+              Déjà dans votre frigo
+            </h2>
+            <p className="mt-2 text-fonte-2">
+              Utilisé dans les repas et retiré de la liste, dans la limite de ces quantités :
+            </p>
+            <ul className="mt-4 flex flex-wrap gap-2">
+              {frigo.map((produit, i) => (
+                <li
+                  key={i}
+                  className="rounded-full bg-email px-3.5 py-1.5 text-[0.95rem] shadow-[inset_0_0_0_1.5px_var(--givre-bord)]"
+                >
+                  {produit.nom}{" "}
+                  <span className="chiffres font-medium text-givre-fonce">
+                    {afficherQuantite(produit.quantite, produit.unite)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </div>
     </main>
   );
 }

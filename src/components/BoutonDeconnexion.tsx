@@ -19,7 +19,7 @@ export default function BoutonDeconnexion({ avecLibelle = false }: { avecLibelle
       type="button"
       onClick={deconnecter}
       title="Se déconnecter"
-      className={`flex h-10 shrink-0 cursor-pointer items-center justify-center text-encre-2 transition-colors hover:bg-surligneur hover:text-encre ${
+      className={`flex h-10 shrink-0 cursor-pointer items-center justify-center rounded-lg text-white/70 transition-colors hover:bg-white/10 hover:text-email ${
         avecLibelle
           ? "gap-2 px-3 font-semibold"
           : "w-10 lg:w-auto lg:gap-2 lg:px-3 lg:font-semibold"

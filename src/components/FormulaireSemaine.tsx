@@ -15,11 +15,12 @@ export type ValeursFormulaire = {
   creneaux: Creneau[];
 };
 
+// Trois bulles qui frémissent pendant l'envoi
 function Chargement() {
   return (
-    <span className="flex gap-1" aria-hidden="true">
-      {["bg-essentiel", "bg-teste", "bg-surligneur", "bg-papier"].map((couleur, i) => (
-        <span key={couleur} className={`ligne-attente size-2 ${couleur}`} style={{ animationDelay: `${i * 160}ms`, animationDuration: "0.9s" }} />
+    <span className="flex h-4 items-end gap-1" aria-hidden="true">
+      {[0, 1, 2].map((i) => (
+        <span key={i} className="bulle size-1.5 rounded-full bg-flamme" style={{ animationDelay: `${i * 220}ms` }} />
       ))}
     </span>
   );
@@ -27,9 +28,9 @@ function Chargement() {
 
 function Etiquette({ htmlFor, children, facultatif }: { htmlFor: string; children: ReactNode; facultatif?: boolean }) {
   return (
-    <label htmlFor={htmlFor} className="font-bold">
+    <label htmlFor={htmlFor} className="font-semibold">
       {children}
-      {facultatif && <span className="ml-2 text-sm font-normal text-encre-3">facultatif</span>}
+      {facultatif && <span className="ml-2 text-sm font-normal whitespace-nowrap text-fonte-3">facultatif</span>}
     </label>
   );
 }
@@ -114,7 +115,7 @@ export default function FormulaireSemaine({ valeursInitiales, children }: { vale
               onChange={(e) => setDebut(e.target.value)}
               required
               disabled={envoi}
-              className="champ chiffres mt-2 font-semibold disabled:bg-papier-2"
+              className="champ chiffres mt-2 font-semibold"
             />
           </div>
 
@@ -130,7 +131,7 @@ export default function FormulaireSemaine({ valeursInitiales, children }: { vale
               onChange={(e) => setPersonnes(e.target.value)}
               required
               disabled={envoi}
-              className="champ chiffres mt-2 font-semibold disabled:bg-papier-2"
+              className="champ chiffres mt-2 font-semibold"
             />
           </div>
 
@@ -148,9 +149,9 @@ export default function FormulaireSemaine({ valeursInitiales, children }: { vale
                 onChange={(e) => setBudget(e.target.value)}
                 required
                 disabled={envoi}
-                className="champ chiffres pr-10 font-semibold disabled:bg-papier-2"
+                className="champ chiffres pr-10 font-semibold"
               />
-              <span aria-hidden="true" className="absolute inset-y-0 right-4 flex items-center font-bold text-encre-2">
+              <span aria-hidden="true" className="absolute inset-y-0 right-4 flex items-center font-bold text-fonte-2">
                 €
               </span>
             </div>
@@ -164,7 +165,7 @@ export default function FormulaireSemaine({ valeursInitiales, children }: { vale
                 value={tempsMax}
                 onChange={(e) => setTempsMax(Number(e.target.value))}
                 disabled={envoi}
-                className="champ chiffres cursor-pointer appearance-none pr-12 font-semibold disabled:bg-papier-2"
+                className="champ chiffres cursor-pointer appearance-none pr-12 font-semibold"
               >
                 {TEMPS_POSSIBLES.map((minutes) => (
                   <option key={minutes} value={minutes}>
@@ -172,7 +173,7 @@ export default function FormulaireSemaine({ valeursInitiales, children }: { vale
                   </option>
                 ))}
               </select>
-              <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-encre-2">
+              <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-fonte-2">
                 <Icone nom="deroulant" />
               </span>
             </div>
@@ -186,7 +187,7 @@ export default function FormulaireSemaine({ valeursInitiales, children }: { vale
             <Etiquette htmlFor="regime" facultatif>
               Régime et allergies
             </Etiquette>
-            <span className="chiffres text-sm text-encre-3" aria-hidden="true">
+            <span className="chiffres text-sm whitespace-nowrap text-fonte-3" aria-hidden="true">
               {regime.length} / {LIMITES.regimeMax}
             </span>
           </div>
@@ -198,16 +199,17 @@ export default function FormulaireSemaine({ valeursInitiales, children }: { vale
             placeholder="Ex. : végétarien, sans arachides"
             autoComplete="off"
             disabled={envoi}
-            className="champ mt-2 disabled:bg-papier-2"
+            className="champ mt-2"
           />
         </div>
 
         <div>
           <div className="flex items-baseline justify-between gap-4">
             <Etiquette htmlFor="frigo" facultatif>
+              <Icone nom="flocon" className="mr-1.5 inline size-4 align-[-2px] text-givre-fonce" />
               Ce qu&apos;il reste dans le frigo
             </Etiquette>
-            <span className="chiffres text-sm text-encre-3" aria-hidden="true">
+            <span className="chiffres text-sm whitespace-nowrap text-fonte-3" aria-hidden="true">
               {frigo.length} / {LIMITES.frigoMax}
             </span>
           </div>
@@ -219,9 +221,9 @@ export default function FormulaireSemaine({ valeursInitiales, children }: { vale
             placeholder={"Un produit par ligne, avec sa quantité si possible :\n3 courgettes\n200 g de lardons\n1 kg de riz"}
             aria-describedby="frigo-aide"
             disabled={envoi}
-            className="champ mt-2 h-40 resize-y disabled:bg-papier-2"
+            className="champ champ-givre mt-2 h-40 resize-y"
           />
-          <p id="frigo-aide" className="mt-2 text-sm text-encre-2">
+          <p id="frigo-aide" className="mt-2 text-sm text-givre-fonce">
             Ces produits sont utilisés en priorité, puis retirés de la liste de courses.
           </p>
         </div>
@@ -230,7 +232,7 @@ export default function FormulaireSemaine({ valeursInitiales, children }: { vale
           <button
             type="submit"
             disabled={envoi}
-            className="bouton bouton-principal w-full disabled:cursor-wait disabled:border-encre disabled:bg-encre disabled:text-papier sm:w-auto sm:min-w-64"
+            className="bouton bouton-principal w-full disabled:cursor-wait disabled:bg-fonte disabled:text-email disabled:shadow-none sm:w-auto sm:min-w-64"
           >
             {envoi ? (
               <>
@@ -242,7 +244,7 @@ export default function FormulaireSemaine({ valeursInitiales, children }: { vale
             )}
           </button>
           {restantes !== null && (
-            <p className="text-sm text-encre-2">
+            <p className="chiffres text-sm text-fonte-2">
               {restantes > 0
                 ? `Encore ${restantes} semaine${restantes > 1 ? "s" : ""} possible${restantes > 1 ? "s" : ""} cette heure-ci.`
                 : "Quota atteint pour l'heure en cours."}
@@ -251,11 +253,11 @@ export default function FormulaireSemaine({ valeursInitiales, children }: { vale
         </div>
 
         {erreur && (
-          <div ref={zoneErreur} tabIndex={-1} role="alert" className="flex gap-4 bg-surligneur-pale px-5 py-4 outline-none sm:px-6">
+          <div ref={zoneErreur} tabIndex={-1} role="alert" className="alerte outline-none sm:px-6">
             <Icone nom="attention" className="mt-0.5 size-6 shrink-0" />
             <div>
               <p className="font-bold">La semaine n&apos;a pas pu être lancée</p>
-              <p className="mt-1 text-encre-2">{erreur}</p>
+              <p className="mt-1 text-fonte-2">{erreur}</p>
             </div>
           </div>
         )}

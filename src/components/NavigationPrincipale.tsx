@@ -17,7 +17,7 @@ export default function NavigationPrincipale() {
 
   return (
     <nav aria-label="Navigation principale">
-      <ul className="flex items-center gap-0.5 sm:gap-2">
+      <ul className="flex items-center gap-0.5 sm:gap-1">
         {LIENS.map(({ href, libelle }) => {
           const actif = estActif(chemin, href);
           return (
@@ -25,14 +25,15 @@ export default function NavigationPrincipale() {
               <Link
                 href={href}
                 aria-current={actif ? "page" : undefined}
-                className={`relative block px-1.5 py-2 text-[0.95rem] font-semibold whitespace-nowrap no-underline transition-colors min-[400px]:px-2 sm:px-3 ${
-                  actif ? "text-encre" : "text-encre-2 hover:text-encre"
+                className={`relative block rounded-lg px-1.5 py-2 text-[0.95rem] font-semibold whitespace-nowrap no-underline transition-colors min-[400px]:px-2 sm:px-3 ${
+                  actif ? "text-email" : "text-white/70 hover:text-email"
                 }`}
               >
                 {libelle}
+                {/* L'onglet actif s'allume d'un trait de flamme posé sur le bas de l'en-tête */}
                 <span
                   aria-hidden="true"
-                  className={`absolute inset-x-1.5 -bottom-[14px] h-1 bg-encre transition-transform duration-300 ease-sortie min-[400px]:inset-x-2 sm:inset-x-3 ${
+                  className={`absolute inset-x-1.5 -bottom-[14px] h-1 rounded-t-full bg-flamme transition-transform duration-300 ease-sortie min-[400px]:inset-x-2 sm:inset-x-3 ${
                     actif ? "scale-x-100" : "scale-x-0"
                   }`}
                 />

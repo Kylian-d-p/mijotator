@@ -3,8 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import AttenteSemaine from "@/components/AttenteSemaine";
+import BandeauPage from "@/components/BandeauPage";
 import GrilleRepas, { type RepasEnregistre } from "@/components/GrilleRepas";
 import Icone from "@/components/Icone";
+import LienCourses from "@/components/LienCourses";
 import { resumeContraintes, titreSemaine, type Creneau, type StatutSemaine } from "@/lib/semaine";
 import { creerClientServeur } from "@/lib/supabase/server";
 
@@ -81,60 +83,37 @@ export default async function DetailSemaine({
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-5 pt-8 pb-20 sm:px-8 sm:pt-10">
-      <Link
-        href="/semaines"
-        className="sans-impression inline-flex items-center gap-2 font-semibold text-encre-2 no-underline hover:text-encre"
+    <main>
+      <BandeauPage
+        titre={titreSemaine(semaine.debut)}
+        retour={{ href: "/semaines", libelle: "Mes semaines" }}
+        actions={
+          prete && (
+            <LienCourses semaineId={id} articles={articles} coches={coches} />
+          )
+        }
       >
-        <Icone nom="retour" className="size-4" />
-        Mes semaines
-      </Link>
+        <p className="mt-4 text-lg">{resumeContraintes(semaine)}</p>
+        <p className="chiffres mt-1">
+          Budget {formatEuros.format(Number(semaine.budget_euros))}
+          {semaine.cout_estime !== null && (
+            <> · environ {formatEuros.format(Number(semaine.cout_estime))} d&apos;ingrédients (estimation)</>
+          )}
+        </p>
+      </BandeauPage>
 
-      <header className="mt-6 flex flex-wrap items-end justify-between gap-x-8 gap-y-6 border-b-2 border-filet pb-7 sm:mt-8">
-        <div className="min-w-0">
-          <h1 className="archivo-large text-[clamp(1.875rem,4.6vw,3.25rem)] leading-[1.04] font-extrabold tracking-tight">
-            {titreSemaine(semaine.debut)}
-          </h1>
-          <p className="mt-3 text-encre-2">{resumeContraintes(semaine)}</p>
-          <p className="chiffres mt-1 text-encre-2">
-            Budget {formatEuros.format(Number(semaine.budget_euros))}
-            {semaine.cout_estime !== null && (
-              <> · environ {formatEuros.format(Number(semaine.cout_estime))} d&apos;ingrédients (estimation)</>
-            )}
-          </p>
-        </div>
-
-        {prete && (
-          <Link
-            href={`/semaines/${id}/courses`}
-            className="group flex w-full items-center gap-4 border-2 border-encre bg-teste-pale px-5 py-3 no-underline transition-colors hover:bg-surligneur sm:w-auto"
-          >
-            <Icone nom="panier" className="size-6 shrink-0" />
-            <span className="flex-1">
-              <span className="block font-bold">Liste de courses</span>
-              <span className="chiffres text-sm text-encre-2 group-hover:text-encre">
-                {articles === 0
-                  ? "Rien à acheter"
-                  : `${articles} article${articles > 1 ? "s" : ""} · ${coches} coché${coches > 1 ? "s" : ""}`}
-              </span>
-            </span>
-            <Icone nom="suite" className="size-4 shrink-0" />
-          </Link>
-        )}
-      </header>
-
-      <div className="mt-8 sm:mt-10">
+      <div className="mx-auto max-w-6xl px-5 pt-8 pb-20 sm:px-8 sm:pt-10">
         {prete && <GrilleRepas repas={repas} debut={semaine.debut} />}
 
         {semaine.statut === "en_attente" && <AttenteSemaine id={semaine.id} />}
 
         {semaine.statut === "erreur" && (
-          <div role="alert" className="flex max-w-3xl gap-4 bg-surligneur-pale px-5 py-4 sm:px-6">
+          <div role="alert" className="alerte max-w-3xl sm:px-6 sm:py-5">
             <Icone nom="attention" className="mt-0.5 size-6 shrink-0" />
             <div>
               <p className="font-bold">La préparation de cette semaine a échoué</p>
-              <p className="mt-1 text-encre-2">{semaine.message_erreur ?? "Erreur inconnue."}</p>
-              <Link href="/" className="mt-3 inline-flex items-center gap-2 font-semibold">
+              <p className="mt-1 text-fonte-2">{semaine.message_erreur ?? "Erreur inconnue."}</p>
+              <Link href="/" className="mt-3 inline-flex items-center gap-2 rounded-md font-semibold text-fonte decoration-flamme">
                 Préparer une nouvelle semaine
                 <Icone nom="suite" className="size-4" />
               </Link>

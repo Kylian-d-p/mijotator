@@ -1,18 +1,18 @@
 import Link from "next/link";
+import BandeauPage from "@/components/BandeauPage";
 import Icone from "@/components/Icone";
 
 export default function PageIntrouvable() {
   return (
-    <main className="mx-auto max-w-6xl px-5 pt-14 pb-20 sm:px-8 sm:pt-20">
-      <div className="max-w-xl">
-        <h1 className="archivo-large text-[clamp(2.5rem,7vw,4.25rem)] leading-[0.98] font-extrabold tracking-tight">
-          Page introuvable
-        </h1>
-        <p className="mt-4 text-lg text-encre-2">
+    <main>
+      <BandeauPage titre="Page introuvable">
+        <p className="mt-4 max-w-xl text-lg">
           Cette semaine ou cette page n&apos;existe pas. Vérifiez le lien, ou retrouvez vos
           semaines dans la liste.
         </p>
-        <div className="mt-8 flex flex-wrap gap-3">
+      </BandeauPage>
+      <div className="mx-auto max-w-6xl px-5 pt-10 pb-20 sm:px-8 sm:pt-12">
+        <div className="flex flex-wrap gap-3">
           <Link href="/semaines" className="bouton bouton-principal">
             Mes semaines
             <Icone nom="suite" className="size-4" />

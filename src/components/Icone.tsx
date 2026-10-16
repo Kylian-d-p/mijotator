@@ -72,8 +72,15 @@ const TRACES = {
   ),
   panier: (
     <>
-      <path d="M3 9h18l-2 11H5L3 9Z" />
-      <path d="m8 9 4-6 4 6" />
+      <path d="M3.5 10h17l-1.7 9.2a1 1 0 0 1-1 .8H6.2a1 1 0 0 1-1-.8L3.5 10Z" />
+      <path d="M8 10a4 4 0 0 1 8 0" />
+      <path d="M10 14v2.5m4-2.5v2.5" />
+    </>
+  ),
+  flocon: (
+    <>
+      <path d="M12 3v18M4.2 7.5l15.6 9m0-9-15.6 9" />
+      <path d="m9.5 4.5 2.5 2 2.5-2m-5 15 2.5-2 2.5 2" />
     </>
   ),
 } as const;
@@ -93,8 +100,8 @@ export default function Icone({
       fill="none"
       stroke="currentColor"
       strokeWidth={2}
-      strokeLinecap="square"
-      strokeLinejoin="miter"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       aria-hidden="true"
       className={className}
     >
