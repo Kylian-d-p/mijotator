@@ -12,10 +12,22 @@ type SchemaJSON = {
 
 export class ErreurIA extends Error {
   status: number;
+  // Code d'erreur du fournisseur, par exemple « json_validate_failed » chez Groq
+  code?: string;
 
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, code?: string) {
     super(message);
     this.status = status;
+    this.code = code;
+  }
+}
+
+function lireCodeErreur(detail: string): string | undefined {
+  try {
+    const code = JSON.parse(detail)?.error?.code;
+    return typeof code === "string" ? code : undefined;
+  } catch {
+    return undefined;
   }
 }
 
@@ -95,7 +107,12 @@ export async function appelerModele(
     const detail = await reponse.text();
     console.error(`Erreur du modèle d'IA (${reponse.status}) : ${detail}`);
     tracer({ erreur: `Statut ${reponse.status} : ${detail}` });
-    throw new ErreurIA("Le modèle d'IA a renvoyé une erreur.", reponse.status);
+    const code = lireCodeErreur(detail);
+    throw new ErreurIA(
+      `Le modèle d'IA a renvoyé une erreur (${reponse.status}${code ? ` ${code}` : ""}).`,
+      reponse.status,
+      code
+    );
   }
 
   const donnees = await reponse.json();

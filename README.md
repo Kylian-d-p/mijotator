@@ -78,7 +78,7 @@ La consigne a été mise au point en cinq versions, testées contre Groq. Ce qui
 - **`max_completion_tokens` est fixé à 6 000.** Sans limite explicite, une semaine de 14 repas était tronquée vers 1 850 tokens.
 - **La vérification rejette moins de 3 étapes par repas.** Un essai n'a renvoyé que « Sers chaud. ».
 
-Groq vérifie la réponse *après* l'avoir générée. La génération est donc retentée une fois en cas d'erreur de format (`src/lib/generer-semaine.ts`), avant les nouvelles tentatives de QStash.
+Groq vérifie la réponse *après* l'avoir générée. La génération est donc retentée une fois en cas d'erreur de format (`src/lib/generer-semaine.ts`). Si la seconde tentative échoue aussi, le worker répond en erreur et QStash relance la génération : ces échecs sont aléatoires (3 appels sur 17 lors d'un test du 16 octobre, dont deux d'affilée), donc une semaine ne passe plus en erreur sur deux tirages malchanceux.
 
 ## Structure de données
 

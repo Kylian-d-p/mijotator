@@ -142,21 +142,28 @@ export async function genererSemaine(
   contraintes: Contraintes,
   trace?: ContexteTrace
 ): Promise<SemaineGeneree> {
-  let derniereErreur: unknown;
+  let derniereErreur = "";
 
   for (let tentative = 1; tentative <= NOMBRE_TENTATIVES; tentative++) {
     try {
       return await tenterGeneration(contraintes, trace);
     } catch (erreur) {
-      derniereErreur = erreur;
-      // 400 : Groq a rejeté sa propre sortie (json_validate_failed) ; 502 : notre vérification
+      // json_validate_failed : Groq a rejeté sa propre sortie ; 502 : notre vérification.
+      // Un autre 400 (requête mal formée) se reproduirait à chaque tentative.
       const erreurDeFormat =
-        erreur instanceof ErreurIA && (erreur.status === 400 || erreur.status === 502);
+        erreur instanceof ErreurIA &&
+        (erreur.code === "json_validate_failed" || erreur.status === 502);
 
       if (!erreurDeFormat) throw erreur;
+      derniereErreur = erreur.message;
       console.warn(`Tentative ${tentative} échouée (format de réponse), nouvelle tentative…`);
     }
   }
 
-  throw derniereErreur;
+  // Ces échecs tombent au hasard (environ un appel sur six) : en 502, QStash retente la
+  // génération au lieu de passer la semaine en erreur après deux tirages malchanceux
+  throw new ErreurIA(
+    `Aucune semaine valide après ${NOMBRE_TENTATIVES} tentatives : ${derniereErreur}`,
+    502
+  );
 }
