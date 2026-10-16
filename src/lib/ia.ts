@@ -21,7 +21,7 @@ export class ErreurIA extends Error {
 
 export async function appelerModele(
   messages: Message[],
-  options: { schema?: SchemaJSON; trace?: ContexteTrace } = {}
+  options: { schema?: SchemaJSON; trace?: ContexteTrace; maxTokens?: number } = {}
 ): Promise<string> {
   const baseUrl = process.env.AI_BASE_URL;
   const apiKey = process.env.AI_API_KEY;
@@ -37,6 +37,8 @@ export async function appelerModele(
     // Modèles qui raisonnent (gpt-oss) : un raisonnement trop long épuise les
     // tokens avant que le JSON soit écrit, et Groq renvoie json_validate_failed.
     ...(reasoningEffort && { reasoning_effort: reasoningEffort }),
+    // Sans limite explicite, Groq a tronqué une semaine de 14 repas vers 1 850 tokens
+    ...(options.maxTokens && { max_completion_tokens: options.maxTokens }),
   };
   const debut = new Date();
 
@@ -121,5 +123,5 @@ export function messageErreurIA(erreur: unknown): string {
     return "Le service d'IA a mis trop de temps à répondre.";
   }
 
-  return "La génération de la fiche a échoué.";
+  return "La génération de la semaine a échoué.";
 }

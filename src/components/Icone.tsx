@@ -63,6 +63,18 @@ const TRACES = {
       <path d="m3 6 9 7 9-7" />
     </>
   ),
+  horloge: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </>
+  ),
+  panier: (
+    <>
+      <path d="M3 9h18l-2 11H5L3 9Z" />
+      <path d="m8 9 4-6 4 6" />
+    </>
+  ),
 } as const;
 
 export type NomIcone = keyof typeof TRACES;

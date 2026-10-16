@@ -79,7 +79,7 @@ export default function TableauStatut() {
             Administration
           </h1>
           <p className="mt-3 text-lg text-encre-2">
-            État des services cloud dont dépend Revizator.
+            État des services cloud dont dépend Mijotator.
           </p>
         </div>
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">

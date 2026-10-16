@@ -1,10 +1,11 @@
 @import "tailwindcss";
 
 /*
- * Revizator : l'univers d'un cahier de révision parascolaire.
+ * Mijotator reprend l'univers imprimé de Revizator (cahier parascolaire).
  * Papier blanc, encre noire et trois encres quadri, chacune avec un seul rôle :
- * cyan = savoir (« L'essentiel »), magenta = auto-test (« Je me teste »),
- * jaune = surligneur (sélection, termes clés, signal d'état).
+ * cyan = repas (grille de la semaine), magenta = courses (liste cochable),
+ * jaune = surligneur (sélection, survol, signal d'état).
+ * Les noms des jetons (essentiel, teste) sont ceux de Revizator.
  */
 :root {
   --papier: #ffffff;

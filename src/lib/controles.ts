@@ -17,7 +17,7 @@ const controleVercel: Controle = {
 
 const controleIA: Controle = {
   service: "Modèle d'IA",
-  description: "Génération des fiches (API compatible OpenAI)",
+  description: "Génération des menus (API compatible OpenAI)",
   verifier: async () => {
     const baseUrl = process.env.AI_BASE_URL;
     const apiKey = process.env.AI_API_KEY;
@@ -51,18 +51,22 @@ const controleIA: Controle = {
 
 export const controleBase: Controle = {
   service: "Supabase Database",
-  description: "Base de données des fiches",
+  description: "Semaines, repas et listes de courses",
   verifier: async () => {
     const supabase = creerClientAdmin();
-    const { count, error } = await supabase
-      .from("fiches")
-      .select("id", { count: "exact", head: true });
+    const comptes = await Promise.all(
+      (["semaines", "repas", "articles_courses"] as const).map((table) =>
+        supabase.from(table).select("id", { count: "exact", head: true })
+      )
+    );
 
-    if (error) {
-      throw new Error(error.message);
+    const echec = comptes.find(({ error }) => error);
+    if (echec?.error) {
+      throw new Error(echec.error.message);
     }
 
-    return `${count ?? 0} fiche(s) enregistrée(s)`;
+    const [semaines, repas, articles] = comptes.map(({ count }) => count ?? 0);
+    return `${semaines} semaine(s) · ${repas} repas · ${articles} article(s) de courses`;
   },
 };
 
@@ -78,29 +82,6 @@ const controleAuth: Controle = {
     }
 
     return "Service d'authentification joignable";
-  },
-};
-
-const controleStockage: Controle = {
-  service: "Supabase Storage",
-  description: "Stockage des cours en PDF",
-  verifier: async () => {
-    const supabase = creerClientAdmin();
-    const { data, error } = await supabase.storage.getBucket("cours");
-
-    if (error || !data) {
-      throw new Error(error?.message ?? "Bucket « cours » introuvable");
-    }
-
-    if (data.public) {
-      throw new Error("Le bucket « cours » est public : les cours sont exposés à tous");
-    }
-
-    const limiteMo = data.file_size_limit
-      ? `${Math.round(data.file_size_limit / 1024 / 1024)} Mo`
-      : "aucune";
-
-    return `Bucket « cours » privé · Taille maximale : ${limiteMo}`;
   },
 };
 
@@ -341,7 +322,6 @@ export const CONTROLES: Controle[] = [
   controleIA,
   controleBase,
   controleAuth,
-  controleStockage,
   controleRedis,
   controleQStash,
   controleRealtime,

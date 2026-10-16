@@ -4,8 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const LIENS = [
-  { href: "/", libelle: "Nouvelle fiche" },
-  { href: "/fiches", libelle: "Mes fiches" },
+  { href: "/", libelle: "Nouvelle semaine" },
+  { href: "/semaines", libelle: "Mes semaines" },
 ];
 
 function estActif(chemin: string, href: string) {

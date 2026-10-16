@@ -1,5 +1,4 @@
-// « Mode d'emploi » : ce que contient chaque fiche, montré comme dans
-// les premières pages d'un cahier de révision.
+// « Mode d'emploi » : ce que produit chaque semaine, en trois vignettes.
 export default function ModeEmploi() {
   return (
     <aside aria-labelledby="mode-emploi" className="border-2 border-filet">
@@ -7,26 +6,22 @@ export default function ModeEmploi() {
         Mode d&apos;emploi
       </h2>
       <div className="p-5 sm:p-7">
-        <p className="text-encre-2">
-          Chaque fiche suit le même plan, comme un cahier de révision.
-        </p>
+        <p className="text-encre-2">Chaque demande produit une semaine complète, prête à cuisiner.</p>
 
         <ol className="mt-7 space-y-7">
           <li className="grid grid-cols-[5.25rem_1fr] items-start gap-5">
             <div aria-hidden="true" className="border border-filet-doux">
               <div className="h-3 bg-essentiel" />
-              <div className="space-y-1.5 bg-essentiel-pale p-2.5">
-                <div className="h-1 w-full bg-essentiel/40" />
-                <div className="h-1 w-11/12 bg-essentiel/40" />
-                <div className="h-1 w-full bg-essentiel/40" />
-                <div className="h-1 w-2/3 bg-essentiel/40" />
+              <div className="grid grid-cols-7 gap-0.5 bg-essentiel-pale p-2">
+                {Array.from({ length: 14 }, (_, i) => (
+                  <div key={i} className={`h-2.5 ${i < 7 ? "bg-essentiel/30" : "bg-essentiel/60"}`} />
+                ))}
               </div>
             </div>
             <div>
-              <h3 className="font-bold">L&apos;essentiel</h3>
+              <h3 className="font-bold">Les repas</h3>
               <p className="mt-0.5 text-[0.95rem] text-encre-2">
-                Une synthèse de <span className="chiffres">150</span> à{" "}
-                <span className="chiffres">300</span> mots, tirée uniquement de votre cours.
+                Un repas par jour et par moment demandé, avec ses ingrédients et ses étapes.
               </p>
             </div>
           </li>
@@ -35,34 +30,35 @@ export default function ModeEmploi() {
             <div aria-hidden="true" className="border border-filet-doux">
               <div className="h-3 bg-teste" />
               <div className="space-y-2 p-2.5">
-                {[0, 1, 2].map((i) => (
+                {[true, false, false].map((coche, i) => (
                   <div key={i} className="flex items-center gap-1.5">
-                    <div className="size-2 shrink-0 bg-teste" />
-                    <div className="h-1 flex-1 bg-encre/20" />
+                    <div className={`size-2 shrink-0 border border-teste ${coche ? "bg-teste" : ""}`} />
+                    <div className={`h-1 flex-1 ${coche ? "bg-encre/10" : "bg-encre/25"}`} />
                   </div>
                 ))}
               </div>
             </div>
             <div>
-              <h3 className="font-bold">Je me teste</h3>
+              <h3 className="font-bold">La liste de courses</h3>
               <p className="mt-0.5 text-[0.95rem] text-encre-2">
-                Trois questions pour vérifier ce que vous avez compris.
+                Regroupée par rayon, sans ce que vous avez déjà dans le frigo.
               </p>
             </div>
           </li>
 
           <li className="grid grid-cols-[5.25rem_1fr] items-start gap-5">
-            <div
-              aria-hidden="true"
-              className="flex h-[3.4rem] items-center justify-center border-[1.5px] border-dashed border-bordure-champ"
-            >
-              <span className="rotate-180 text-[0.8rem] font-bold text-encre-2">Corrigé</span>
+            <div aria-hidden="true" className="flex h-[3.4rem] items-end justify-center gap-2 pb-1">
+              <div className="flex h-12 w-7 items-center justify-center border-2 border-encre">
+                <div className="size-2 bg-teste" />
+              </div>
+              <div className="flex h-9 w-11 items-center justify-center border-2 border-encre">
+                <div className="size-2 bg-teste" />
+              </div>
             </div>
             <div>
-              <h3 className="font-bold">Les corrigés</h3>
+              <h3 className="font-bold">Cochée en direct</h3>
               <p className="mt-0.5 text-[0.95rem] text-encre-2">
-                Imprimés à l&apos;envers : retournez-les une fois votre réponse en tête,
-                puis notez si vous saviez.
+                Cochez sur votre téléphone au magasin : vos autres écrans suivent sans rechargement.
               </p>
             </div>
           </li>

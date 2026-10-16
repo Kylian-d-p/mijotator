@@ -17,10 +17,10 @@ export default async function EnTete() {
         <Link
           href="/"
           className="group flex items-center gap-2 no-underline min-[400px]:gap-3"
-          aria-label="Revizator, accueil"
+          aria-label="Mijotator, accueil"
         >
           <span className="archivo-large text-lg font-extrabold tracking-tight min-[400px]:text-xl sm:text-2xl">
-            Revizator
+            Mijotator
           </span>
           {/* Gamme quadri, comme en marge d'une page imprimée : en carré 2×2 sur petit écran */}
           <span className="grid grid-cols-2 sm:flex" aria-hidden="true">

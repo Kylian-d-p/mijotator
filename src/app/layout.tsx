@@ -21,11 +21,11 @@ const atkinson = Atkinson_Hyperlegible_Next({
 
 export const metadata: Metadata = {
   title: {
-    default: "Revizator",
-    template: "%s · Revizator",
+    default: "Mijotator",
+    template: "%s · Mijotator",
   },
   description:
-    "Collez un cours, obtenez une fiche de synthèse et des questions de révision.",
+    "Donnez vos contraintes, obtenez les repas de la semaine et la liste de courses qui va avec.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -39,8 +39,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <div className="flex-1">{children}</div>
         <footer className="sans-impression border-t border-filet-doux">
           <div className="mx-auto flex max-w-6xl flex-col gap-1 px-5 py-6 text-sm text-encre-3 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-            <p>Fiches rédigées par une IA à partir de vos cours : relisez-les avant de les apprendre.</p>
-            <p className="archivo-etroit font-semibold uppercase tracking-wide">Revizator</p>
+            <p>Menus proposés par une IA : vérifiez allergènes, quantités et cuissons avant de cuisiner.</p>
+            <p className="archivo-etroit font-semibold uppercase tracking-wide">Mijotator</p>
           </div>
         </footer>
       </body>

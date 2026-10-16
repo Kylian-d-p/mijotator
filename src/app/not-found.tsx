@@ -9,16 +9,16 @@ export default function PageIntrouvable() {
           Page introuvable
         </h1>
         <p className="mt-4 text-lg text-encre-2">
-          Cette fiche ou cette page n&apos;existe pas. Vérifiez le lien, ou retrouvez vos fiches
-          dans le sommaire.
+          Cette semaine ou cette page n&apos;existe pas. Vérifiez le lien, ou retrouvez vos
+          semaines dans la liste.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/fiches" className="bouton bouton-principal">
-            Mes fiches
+          <Link href="/semaines" className="bouton bouton-principal">
+            Mes semaines
             <Icone nom="suite" className="size-4" />
           </Link>
           <Link href="/" className="bouton bouton-secondaire">
-            Nouvelle fiche
+            Nouvelle semaine
           </Link>
         </div>
       </div>
