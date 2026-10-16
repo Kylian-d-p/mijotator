@@ -3,7 +3,8 @@
 import { useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Icone from "@/components/Icone";
-import { LIMITES, TEMPS_POSSIBLES, validerContraintes } from "@/lib/semaine";
+import SelecteurCreneaux from "@/components/SelecteurCreneaux";
+import { LIMITES, TEMPS_POSSIBLES, validerContraintes, type Creneau } from "@/lib/semaine";
 
 export type ValeursFormulaire = {
   debut: string;
@@ -11,7 +12,7 @@ export type ValeursFormulaire = {
   budget: number;
   regime: string;
   tempsMax: number;
-  midi: boolean;
+  creneaux: Creneau[];
 };
 
 function Chargement() {
@@ -49,7 +50,7 @@ export default function FormulaireSemaine({
   const [personnes, setPersonnes] = useState(String(valeursInitiales.personnes));
   const [budget, setBudget] = useState(String(valeursInitiales.budget));
   const [tempsMax, setTempsMax] = useState(valeursInitiales.tempsMax);
-  const [midi, setMidi] = useState(valeursInitiales.midi);
+  const [creneaux, setCreneaux] = useState(valeursInitiales.creneaux);
   const [regime, setRegime] = useState(valeursInitiales.regime);
   const [frigo, setFrigo] = useState("");
   const [envoi, setEnvoi] = useState(false);
@@ -71,7 +72,7 @@ export default function FormulaireSemaine({
       personnes: Number(personnes),
       budget: Number(budget.replace(",", ".")),
       tempsMax,
-      midi,
+      creneaux,
       regime,
       frigo,
     };
@@ -115,7 +116,7 @@ export default function FormulaireSemaine({
       <form onSubmit={envoyer} className="flex flex-col gap-6 lg:col-span-7" aria-busy={envoi} noValidate>
         <div className="grid gap-6 sm:grid-cols-2">
           <div>
-            <Etiquette htmlFor="debut">Début de la semaine</Etiquette>
+            <Etiquette htmlFor="debut">Premier repas du programme</Etiquette>
             <input
               id="debut"
               type="date"
@@ -166,7 +167,7 @@ export default function FormulaireSemaine({
           </div>
 
           <div>
-            <Etiquette htmlFor="temps">Temps maximal par repas</Etiquette>
+            <Etiquette htmlFor="temps">Temps de préparation maximal</Etiquette>
             <select
               id="temps"
               value={tempsMax}
@@ -176,40 +177,14 @@ export default function FormulaireSemaine({
             >
               {TEMPS_POSSIBLES.map((minutes) => (
                 <option key={minutes} value={minutes}>
-                  {minutes} minutes
+                  {minutes} minutes par repas
                 </option>
               ))}
             </select>
           </div>
         </div>
 
-        <fieldset>
-          <legend className="font-bold">Repas à prévoir</legend>
-          <div role="group" className="mt-2 inline-flex border-2 border-encre">
-            {(
-              [
-                { valeur: false, libelle: "Le soir", detail: "7 repas" },
-                { valeur: true, libelle: "Midi et soir", detail: "14 repas" },
-              ] as const
-            ).map(({ valeur, libelle, detail }) => (
-              <button
-                key={libelle}
-                type="button"
-                onClick={() => setMidi(valeur)}
-                aria-pressed={midi === valeur}
-                disabled={envoi}
-                className={`min-h-11 cursor-pointer px-4 text-[0.95rem] font-bold transition-colors disabled:cursor-not-allowed ${
-                  midi === valeur ? "bg-encre text-papier" : "bg-papier text-encre hover:bg-surligneur"
-                }`}
-              >
-                {libelle}
-                <span className={`chiffres ml-2 font-normal ${midi === valeur ? "text-papier/75" : "text-encre-3"}`}>
-                  {detail}
-                </span>
-              </button>
-            ))}
-          </div>
-        </fieldset>
+        <SelecteurCreneaux debut={debut} valeur={creneaux} onChange={setCreneaux} disabled={envoi} />
 
         <div>
           <div className="flex items-baseline justify-between gap-4">

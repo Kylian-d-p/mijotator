@@ -54,6 +54,27 @@ export type ArticleCourses = Ingredient;
 
 export type StatutSemaine = "en_attente" | "prete" | "erreur";
 
+// Un créneau est un repas à prévoir : jour du programme (1 à 7) et moment, par exemple « 3-soir »
+export const JOURS = [1, 2, 3, 4, 5, 6, 7] as const;
+export type Jour = (typeof JOURS)[number];
+export type Creneau = `${Jour}-${Moment}`;
+
+export const creneau = (jour: number, moment: Moment) => `${jour}-${moment}` as Creneau;
+
+export const TOUS_LES_CRENEAUX: Creneau[] = JOURS.flatMap((jour) =>
+  MOMENTS.map((moment) => creneau(jour, moment))
+);
+
+export const estCreneau = (valeur: unknown): valeur is Creneau =>
+  typeof valeur === "string" && TOUS_LES_CRENEAUX.includes(valeur as Creneau);
+
+// Sans doublon, dans l'ordre du programme (J1 midi, J1 soir, J2 midi…)
+export function trierCreneaux(creneaux: Creneau[]): Creneau[] {
+  return TOUS_LES_CRENEAUX.filter((c) => creneaux.includes(c));
+}
+
+export const TOUS_LES_SOIRS: Creneau[] = JOURS.map((jour) => creneau(jour, "soir"));
+
 // Ce que l'utilisateur saisit dans le formulaire
 export type Contraintes = {
   debut: string;
@@ -61,7 +82,7 @@ export type Contraintes = {
   budget: number;
   regime: string;
   tempsMax: number;
-  midi: boolean;
+  creneaux: Creneau[];
   frigo: string;
 };
 
@@ -117,7 +138,7 @@ export function validerContraintes(
     ecartJours > LIMITES.joursApresMax
   ) {
     return {
-      erreur: `La date de début doit être comprise entre ${LIMITES.joursAvantMax} jours avant et ${LIMITES.joursApresMax} jours après aujourd'hui.`,
+      erreur: `La date du premier repas doit être comprise entre ${LIMITES.joursAvantMax} jours avant et ${LIMITES.joursApresMax} jours après aujourd'hui.`,
     };
   }
 
@@ -149,6 +170,11 @@ export function validerContraintes(
     return { erreur: `Le régime et les allergies tiennent en ${LIMITES.regimeMax} caractères maximum.` };
   }
 
+  const creneaux = Array.isArray(c.creneaux) ? c.creneaux : [];
+  if (creneaux.length === 0 || !creneaux.every(estCreneau)) {
+    return { erreur: "Choisissez au moins un repas à prévoir." };
+  }
+
   const frigo = typeof c.frigo === "string" ? c.frigo.trim() : "";
   if (frigo.length > LIMITES.frigoMax) {
     return { erreur: `Le contenu du frigo tient en ${LIMITES.frigoMax} caractères maximum.` };
@@ -161,7 +187,7 @@ export function validerContraintes(
       budget: Math.round(budget * 100) / 100,
       regime,
       tempsMax,
-      midi: c.midi === true,
+      creneaux: trierCreneaux(creneaux),
       frigo,
     },
   };
@@ -187,6 +213,23 @@ export function libelleJour(debut: string, jour: number) {
   return texte.charAt(0).toUpperCase() + texte.slice(1);
 }
 
+// Jour de la semaine et date d'un jour du programme, en abrégé : { semaine: "lun.", date: "19" }
+export function libelleJourCourt(debut: string, jour: number) {
+  const date = dateDuJour(debut, jour - 1);
+  return {
+    semaine: date.toLocaleDateString("fr-FR", { weekday: "short", timeZone: "UTC" }),
+    date: String(date.getUTCDate()),
+  };
+}
+
+export function estWeekEnd(debut: string, jour: number) {
+  const jourSemaine = dateDuJour(debut, jour - 1).getUTCDay();
+  return jourSemaine === 0 || jourSemaine === 6;
+}
+
+export const dateValide = (debut: string) =>
+  /^\d{4}-\d{2}-\d{2}$/.test(debut) && !Number.isNaN(dateDuJour(debut).getTime());
+
 export function libelleDateLongue(debut: string) {
   return dateDuJour(debut).toLocaleDateString("fr-FR", {
     weekday: "long",
@@ -208,16 +251,25 @@ export function afficherQuantite(quantite: number, unite: Unite) {
   return `${formatQuantite.format(quantite)} ${unite}`;
 }
 
+// « tous les soirs », « midi et soir », ou le nombre de repas pour un choix libre
+export function decrireCreneaux(creneaux: Creneau[]) {
+  const n = creneaux.length;
+  if (n === TOUS_LES_CRENEAUX.length) return "midi et soir, 7 jours";
+  if (n === 7 && TOUS_LES_SOIRS.every((c) => creneaux.includes(c))) return "tous les soirs";
+  if (n === 7 && creneaux.every((c) => c.endsWith("-midi"))) return "tous les midis";
+  return `${n} repas`;
+}
+
 export function resumeContraintes(semaine: {
   personnes: number;
-  midi: boolean;
+  creneaux: Creneau[];
   temps_max_minutes: number;
   regime: string;
 }) {
   return [
     `${semaine.personnes} personne${semaine.personnes > 1 ? "s" : ""}`,
-    semaine.midi ? "midi et soir" : "le soir",
-    `${semaine.temps_max_minutes} min max`,
+    decrireCreneaux(semaine.creneaux),
+    `${semaine.temps_max_minutes} min de préparation max`,
     semaine.regime.trim() || null,
   ]
     .filter(Boolean)

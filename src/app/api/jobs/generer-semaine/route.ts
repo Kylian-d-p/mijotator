@@ -5,7 +5,7 @@ import { envoyerNotification } from "@/lib/email";
 import { genererSemaine } from "@/lib/generer-semaine";
 import { ErreurIA, messageErreurIA } from "@/lib/ia";
 import { NOMBRE_REESSAIS } from "@/lib/qstash";
-import type { ArticleCourses, Repas } from "@/lib/semaine";
+import type { ArticleCourses, Creneau, Repas } from "@/lib/semaine";
 import { creerClientAdmin } from "@/lib/supabase/admin";
 
 export const maxDuration = 60;
@@ -21,7 +21,7 @@ type SemaineAGenerer = {
   budget_euros: number;
   regime: string;
   temps_max_minutes: number;
-  midi: boolean;
+  creneaux: Creneau[];
   frigo: string;
 };
 
@@ -105,7 +105,7 @@ async function traiter(request: Request) {
 
   const { data: semaine } = await supabase
     .from("semaines")
-    .select("id, user_id, statut, debut, personnes, budget_euros, regime, temps_max_minutes, midi, frigo")
+    .select("id, user_id, statut, debut, personnes, budget_euros, regime, temps_max_minutes, creneaux, frigo")
     .eq("id", semaineId)
     .maybeSingle<SemaineAGenerer>();
 
@@ -124,14 +124,14 @@ async function traiter(request: Request) {
         budget: Number(semaine.budget_euros),
         regime: semaine.regime,
         tempsMax: semaine.temps_max_minutes,
-        midi: semaine.midi,
+        creneaux: semaine.creneaux,
         frigo: semaine.frigo,
       },
       {
         id: semaine.id,
         nom: "generation-semaine",
         userId: semaine.user_id,
-        metadata: { tentativeQStash: tentative + 1, midi: semaine.midi },
+        metadata: { tentativeQStash: tentative + 1, repasDemandes: semaine.creneaux.length },
       }
     );
 

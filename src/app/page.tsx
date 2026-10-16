@@ -1,6 +1,6 @@
 import FormulaireSemaine, { type ValeursFormulaire } from "@/components/FormulaireSemaine";
 import ModeEmploi from "@/components/ModeEmploi";
-import { prochainLundi } from "@/lib/semaine";
+import { estCreneau, prochainLundi, TOUS_LES_SOIRS } from "@/lib/semaine";
 import { creerClientServeur } from "@/lib/supabase/server";
 
 export default async function Home() {
@@ -8,10 +8,12 @@ export default async function Home() {
   const supabase = await creerClientServeur();
   const { data: derniere } = await supabase
     .from("semaines")
-    .select("personnes, budget_euros, regime, temps_max_minutes, midi")
+    .select("personnes, budget_euros, regime, temps_max_minutes, creneaux")
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
+
+  const creneauxPrecedents = ((derniere?.creneaux ?? []) as string[]).filter(estCreneau);
 
   const valeursInitiales: ValeursFormulaire = {
     debut: prochainLundi(),
@@ -19,7 +21,7 @@ export default async function Home() {
     budget: derniere ? Number(derniere.budget_euros) : 50,
     regime: derniere?.regime ?? "",
     tempsMax: derniere?.temps_max_minutes ?? 30,
-    midi: derniere?.midi ?? false,
+    creneaux: creneauxPrecedents.length > 0 ? creneauxPrecedents : TOUS_LES_SOIRS,
   };
 
   return (

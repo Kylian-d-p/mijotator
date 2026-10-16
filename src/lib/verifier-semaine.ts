@@ -1,4 +1,5 @@
 import {
+  estCreneau,
   RAYONS,
   UNITES,
   type Contraintes,
@@ -37,21 +38,20 @@ function lireIngredient(valeur: unknown): Ingredient | null {
 // la génération est alors retentée.
 export function verifierSemaine(
   donnees: unknown,
-  contraintes: Pick<Contraintes, "midi" | "tempsMax">
+  contraintes: Pick<Contraintes, "creneaux" | "tempsMax">
 ): Resultat {
   const erreurs: string[] = [];
-  const moments: Moment[] = contraintes.midi ? ["midi", "soir"] : ["soir"];
+  const demandes = new Set<string>(contraintes.creneaux);
 
   if (!estObjet(donnees) || !Array.isArray(donnees.repas) || !Array.isArray(donnees.frigo)) {
     return { erreurs: ["structure de la réponse invalide"], semaine: null };
   }
 
-  const attendus = 7 * moments.length;
-  if (donnees.repas.length !== attendus) {
-    erreurs.push(`${donnees.repas.length} repas au lieu de ${attendus}`);
+  if (donnees.repas.length !== demandes.size) {
+    erreurs.push(`${donnees.repas.length} repas au lieu de ${demandes.size}`);
   }
 
-  const creneaux = new Set<string>();
+  const recus = new Set<string>();
   const repas: Repas[] = [];
 
   for (const brut of donnees.repas) {
@@ -60,13 +60,11 @@ export function verifierSemaine(
       continue;
     }
 
-    const creneau = `J${brut.jour} ${brut.moment}`;
-    if (!Number.isInteger(brut.jour) || (brut.jour as number) < 1 || (brut.jour as number) > 7) {
-      erreurs.push(`jour invalide : ${brut.jour}`);
-    }
-    if (!moments.includes(brut.moment as Moment)) erreurs.push(`moment non demandé : ${creneau}`);
-    if (creneaux.has(creneau)) erreurs.push(`créneau en double : ${creneau}`);
-    creneaux.add(creneau);
+    const creneau = `${brut.jour}-${brut.moment}`;
+    if (!estCreneau(creneau)) erreurs.push(`créneau invalide : ${creneau}`);
+    else if (!demandes.has(creneau)) erreurs.push(`créneau non demandé : ${creneau}`);
+    if (recus.has(creneau)) erreurs.push(`créneau en double : ${creneau}`);
+    recus.add(creneau);
 
     if (!estTexte(brut.titre)) erreurs.push(`titre vide : ${creneau}`);
 
@@ -96,10 +94,8 @@ export function verifierSemaine(
     }
   }
 
-  for (const moment of moments) {
-    for (let jour = 1; jour <= 7; jour++) {
-      if (!creneaux.has(`J${jour} ${moment}`)) erreurs.push(`créneau manquant : J${jour} ${moment}`);
-    }
+  for (const creneau of contraintes.creneaux) {
+    if (!recus.has(creneau)) erreurs.push(`créneau manquant : ${creneau}`);
   }
 
   // Le frigo relevé sert seulement à alléger la liste : un produit illisible ou

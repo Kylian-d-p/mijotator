@@ -5,7 +5,7 @@ import { cache } from "react";
 import AttenteSemaine from "@/components/AttenteSemaine";
 import GrilleRepas, { type RepasEnregistre } from "@/components/GrilleRepas";
 import Icone from "@/components/Icone";
-import { resumeContraintes, titreSemaine, type StatutSemaine } from "@/lib/semaine";
+import { resumeContraintes, titreSemaine, type Creneau, type StatutSemaine } from "@/lib/semaine";
 import { creerClientServeur } from "@/lib/supabase/server";
 
 type SemaineDetaillee = {
@@ -15,7 +15,7 @@ type SemaineDetaillee = {
   budget_euros: number;
   regime: string;
   temps_max_minutes: number;
-  midi: boolean;
+  creneaux: Creneau[];
   statut: StatutSemaine;
   message_erreur: string | null;
   cout_estime: number | null;
@@ -27,7 +27,7 @@ const chargerSemaine = cache(async (id: string) => {
   const supabase = await creerClientServeur();
   const { data: semaine } = await supabase
     .from("semaines")
-    .select("id, debut, personnes, budget_euros, regime, temps_max_minutes, midi, statut, message_erreur, cout_estime")
+    .select("id, debut, personnes, budget_euros, regime, temps_max_minutes, creneaux, statut, message_erreur, cout_estime")
     .eq("id", id)
     .maybeSingle<SemaineDetaillee>();
 

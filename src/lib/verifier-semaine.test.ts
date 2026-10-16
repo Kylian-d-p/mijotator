@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { TOUS_LES_CRENEAUX, TOUS_LES_SOIRS, type Creneau } from "@/lib/semaine";
 import { verifierSemaine } from "@/lib/verifier-semaine";
 
-const contraintes = { midi: false, tempsMax: 30 };
+const contraintes = { creneaux: TOUS_LES_SOIRS, tempsMax: 30 };
 
 function repasValide(jour: number, moment = "soir") {
   return {
@@ -14,20 +15,22 @@ function repasValide(jour: number, moment = "soir") {
   };
 }
 
-function semaineValide(midi = false) {
-  const moments = midi ? ["midi", "soir"] : ["soir"];
+function semaineValide(creneaux: Creneau[] = TOUS_LES_SOIRS) {
   return {
     frigo: [],
-    repas: moments.flatMap((moment) => [1, 2, 3, 4, 5, 6, 7].map((jour) => repasValide(jour, moment))),
+    repas: creneaux.map((c) => {
+      const [jour, moment] = c.split("-");
+      return repasValide(Number(jour), moment);
+    }),
     cout_estime: 42.5,
   };
 }
 
 describe("verifierSemaine", () => {
   it("accepte une semaine complète et trie les repas", () => {
-    const donnees = semaineValide(true);
+    const donnees = semaineValide(TOUS_LES_CRENEAUX);
     donnees.repas.reverse();
-    const { erreurs, semaine } = verifierSemaine(donnees, { midi: true, tempsMax: 30 });
+    const { erreurs, semaine } = verifierSemaine(donnees, { creneaux: TOUS_LES_CRENEAUX, tempsMax: 30 });
     expect(erreurs).toEqual([]);
     expect(semaine?.repas).toHaveLength(14);
     expect(semaine?.repas[0]).toMatchObject({ jour: 1, moment: "midi" });
@@ -40,13 +43,23 @@ describe("verifierSemaine", () => {
     const { erreurs, semaine } = verifierSemaine(donnees, contraintes);
     expect(semaine).toBeNull();
     expect(erreurs).toContain("6 repas au lieu de 7");
-    expect(erreurs).toContain("créneau manquant : J7 soir");
+    expect(erreurs).toContain("créneau manquant : 7-soir");
   });
 
   it("rejette un midi qui n'était pas demandé", () => {
     const donnees = semaineValide();
     donnees.repas[0] = repasValide(1, "midi");
-    expect(verifierSemaine(donnees, contraintes).erreurs).toContain("moment non demandé : J1 midi");
+    expect(verifierSemaine(donnees, contraintes).erreurs).toContain("créneau non demandé : 1-midi");
+  });
+
+  it("accepte un choix libre de créneaux, et seulement ceux-là", () => {
+    const creneaux: Creneau[] = ["1-soir", "3-midi", "3-soir", "6-midi"];
+    const { erreurs, semaine } = verifierSemaine(semaineValide(creneaux), { creneaux, tempsMax: 30 });
+    expect(erreurs).toEqual([]);
+    expect(semaine?.repas.map((r) => `${r.jour}-${r.moment}`)).toEqual(creneaux);
+
+    const enTrop = semaineValide([...creneaux, "7-soir"]);
+    expect(verifierSemaine(enTrop, { creneaux, tempsMax: 30 }).erreurs).toContain("créneau non demandé : 7-soir");
   });
 
   it("rejette un repas trop long à préparer", () => {
@@ -58,13 +71,13 @@ describe("verifierSemaine", () => {
   it("rejette moins de trois étapes (« Sers chaud. » seul)", () => {
     const donnees = semaineValide();
     donnees.repas[0].etapes = ["Sers chaud."];
-    expect(verifierSemaine(donnees, contraintes).erreurs).toContain("1 étapes : J1 soir");
+    expect(verifierSemaine(donnees, contraintes).erreurs).toContain("1 étapes : 1-soir");
   });
 
   it("rejette une unité ou un rayon inconnus", () => {
     const donnees = semaineValide();
     donnees.repas[0].ingredients = [{ nom: "riz", quantite: 1, unite: "tasse", rayon: "epicerie" }];
-    expect(verifierSemaine(donnees, contraintes).erreurs).toContain("ingrédient invalide : J1 soir");
+    expect(verifierSemaine(donnees, contraintes).erreurs).toContain("ingrédient invalide : 1-soir");
   });
 
   it("ignore un produit du frigo sans quantité au lieu de rejeter la semaine", () => {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Icone from "@/components/Icone";
-import { resumeContraintes, titreSemaine, type StatutSemaine } from "@/lib/semaine";
+import { resumeContraintes, titreSemaine, type Creneau, type StatutSemaine } from "@/lib/semaine";
 import { creerClientServeur } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -14,7 +14,7 @@ type LigneSemaine = {
   id: string;
   debut: string;
   personnes: number;
-  midi: boolean;
+  creneaux: Creneau[];
   temps_max_minutes: number;
   regime: string;
   statut: StatutSemaine;
@@ -38,7 +38,7 @@ export default async function ListeSemaines() {
   const supabase = await creerClientServeur();
   const { data, error } = await supabase
     .from("semaines")
-    .select("id, debut, personnes, midi, temps_max_minutes, regime, statut")
+    .select("id, debut, personnes, creneaux, temps_max_minutes, regime, statut")
     .order("created_at", { ascending: false });
   const semaines = data as LigneSemaine[] | null;
 

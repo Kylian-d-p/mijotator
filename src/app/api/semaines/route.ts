@@ -64,7 +64,7 @@ export async function POST(request: Request) {
       budget_euros: contraintes.budget,
       regime: contraintes.regime,
       temps_max_minutes: contraintes.tempsMax,
-      midi: contraintes.midi,
+      creneaux: contraintes.creneaux,
       frigo: contraintes.frigo,
     })
     .select("id, statut")

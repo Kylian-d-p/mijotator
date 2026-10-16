@@ -13,7 +13,14 @@ create table public.semaines (
   budget_euros numeric(6, 2) not null check (budget_euros between 10 and 500),
   regime text not null default '' check (char_length(regime) <= 200),
   temps_max_minutes smallint not null check (temps_max_minutes between 5 and 180),
-  midi boolean not null default false,
+  -- Repas à prévoir : « jour-moment », du jour 1 au jour 7 du programme
+  creneaux text[] not null check (
+    cardinality(creneaux) between 1 and 14
+    and creneaux <@ array[
+      '1-midi', '1-soir', '2-midi', '2-soir', '3-midi', '3-soir', '4-midi', '4-soir',
+      '5-midi', '5-soir', '6-midi', '6-soir', '7-midi', '7-soir'
+    ]
+  ),
   frigo text not null default '' check (char_length(frigo) <= 1000),
   statut text not null default 'en_attente' check (statut in ('en_attente', 'prete', 'erreur')),
   message_erreur text,
@@ -103,7 +110,7 @@ grant all on public.semaines, public.repas, public.articles_courses to service_r
 
 -- Une semaine se crée avec ses seules contraintes : user_id et statut prennent leur valeur par défaut
 revoke insert on public.semaines from anon, authenticated;
-grant insert (debut, personnes, budget_euros, regime, temps_max_minutes, midi, frigo)
+grant insert (debut, personnes, budget_euros, regime, temps_max_minutes, creneaux, frigo)
   on public.semaines to authenticated;
 
 -- Dans la liste de courses, seule la case à cocher est modifiable

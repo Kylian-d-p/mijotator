@@ -21,7 +21,7 @@ export default function ModeEmploi() {
             <div>
               <h3 className="font-bold">Les repas</h3>
               <p className="mt-0.5 text-[0.95rem] text-encre-2">
-                Un repas par jour et par moment demandé, avec ses ingrédients et ses étapes.
+                Un repas par case cochée du planning, avec ses ingrédients et ses étapes.
               </p>
             </div>
           </li>

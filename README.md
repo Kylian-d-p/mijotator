@@ -4,7 +4,7 @@
 
 Mijotator compose les repas de la semaine et la liste de courses qui va avec.
 
-L'utilisateur connecté indique ses contraintes : nombre de personnes, budget, régime et allergies, temps de préparation maximal, repas du soir seulement ou midi et soir. Il ajoute ce qu'il reste dans son frigo. Un modèle d'IA hébergé propose alors un repas par créneau, avec ses ingrédients et ses étapes. L'application en tire une liste de courses regroupée par rayon, dont elle retire ce que le frigo contient déjà. La liste se coche en direct : au magasin sur le téléphone, et l'ordinateur suit sans rechargement.
+L'utilisateur connecté indique ses contraintes : nombre de personnes, budget, régime et allergies, temps de préparation maximal, et les repas à prévoir, cochés jour par jour (midi, soir ou les deux) sur un planning de sept jours. Il ajoute ce qu'il reste dans son frigo. Un modèle d'IA hébergé propose alors un repas par créneau, avec ses ingrédients et ses étapes. L'application en tire une liste de courses regroupée par rayon, dont elle retire ce que le frigo contient déjà. La liste se coche en direct : au magasin sur le téléphone, et l'ordinateur suit sans rechargement.
 
 Pour qui : celles et ceux qui font leurs courses une fois par semaine et veulent arrêter de se demander « on mange quoi ce soir ? », sans gaspiller ce qui traîne au frigo.
 
@@ -82,7 +82,7 @@ Groq vérifie la réponse *après* l'avoir générée. La génération est donc 
 
 ## Structure de données
 
-Script versionné : [`supabase/schema.sql`](supabase/schema.sql).
+Script versionné : [`supabase/schema.sql`](supabase/schema.sql), pour une base neuve. Une base créée avant le choix libre des repas se met à jour avec [`supabase/migration-creneaux.sql`](supabase/migration-creneaux.sql).
 
 ```
 semaines 1──n repas
@@ -91,7 +91,7 @@ semaines 1──n repas
 
 | Table | Contenu |
 |---|---|
-| `semaines` | Contraintes saisies (`debut`, `personnes`, `budget_euros`, `regime`, `temps_max_minutes`, `midi`, `frigo`), `statut` (`en_attente`, `prete`, `erreur`), `frigo_releve`, `cout_estime`, `modele` |
+| `semaines` | Contraintes saisies (`debut`, `personnes`, `budget_euros`, `regime`, `temps_max_minutes`, `creneaux`, `frigo`). `creneaux` liste les repas à prévoir sous la forme « jour-moment » (`1-soir`, `3-midi`…), vérifiés par une contrainte `check`, `statut` (`en_attente`, `prete`, `erreur`), `frigo_releve`, `cout_estime`, `modele` |
 | `repas` | `semaine_id` → `semaines`, `jour` (1 à 7), `moment` (`midi`, `soir`), `titre`, `temps_minutes`, `ingredients` (JSON), `etapes`. Unicité (`semaine_id`, `jour`, `moment`) |
 | `articles_courses` | `semaine_id` → `semaines`, `nom`, `quantite`, `unite` (`g`, `ml`, `piece`), `rayon`, `coche` |
 

@@ -1,6 +1,15 @@
 import { appelerModele, ErreurIA } from "@/lib/ia";
 import type { ContexteTrace } from "@/lib/langfuse";
-import { libelleDateLongue, RAYONS, UNITES, type Contraintes, type SemaineGeneree } from "@/lib/semaine";
+import {
+  creneau,
+  JOURS,
+  libelleDateLongue,
+  MOMENTS,
+  RAYONS,
+  UNITES,
+  type Contraintes,
+  type SemaineGeneree,
+} from "@/lib/semaine";
 import { verifierSemaine } from "@/lib/verifier-semaine";
 
 // Consigne mise au point sur gpt-oss-20b (Groq) en cinq versions : voir le README
@@ -9,10 +18,10 @@ const CONSIGNE_SYSTEME = `Tu es un assistant qui planifie les repas de la semain
 
 Règles :
 - frigo reprend chaque produit du frigo, avec sa quantité convertie en g, ml ou pièce. Si la quantité est imprécise (« entamé », « un reste »), estime-la. Liste vide si le frigo est vide.
-- Exactement un repas par jour (jours 1 à 7) et par moment demandé.
+- Exactement un repas par créneau demandé (jour et moment), et aucun autre : un jour sans créneau n'a pas de repas.
 - Le régime et les allergies passent avant tout : n'utilise jamais un ingrédient qui ne les respecte pas, même s'il est dans le frigo.
-- Chaque repas se prépare réellement dans le temps maximal indiqué.
-- Les quantités sont pour le nombre de personnes indiqué, en g, ml ou pièce.
+- Chaque repas se prépare réellement dans le temps de préparation maximal indiqué.
+- Les quantités sont pour le nombre de personnes indiqué. unite vaut exactement "g", "ml" ou "piece", rien d'autre : une laitue, une gousse d'ail ou un cube de bouillon se comptent en "piece".
 - Les noms d'ingrédients sont courts et génériques, sans qualificatif : « champignons », pas « champignons frais ».
 - Ne liste jamais le sel, le poivre, l'eau ni aucune huile, huile d'olive comprise : ils sont toujours disponibles.
 - Rayon cremerie : produits laitiers et œufs.
@@ -79,14 +88,23 @@ const SCHEMA_SEMAINE = {
 const MAX_TOKENS = 6000;
 const NOMBRE_TENTATIVES = 2;
 
+// « jour 1 midi ; jour 1 soir ; jour 3 soir » : les créneaux exacts, dans l'ordre du programme
+function listeCreneaux(contraintes: Contraintes) {
+  return JOURS.flatMap((jour) =>
+    MOMENTS.filter((moment) => contraintes.creneaux.includes(creneau(jour, moment))).map(
+      (moment) => `jour ${jour} ${moment}`
+    )
+  ).join(" ; ");
+}
+
 function messageUtilisateur(contraintes: Contraintes) {
   return [
-    `Début de la semaine : ${libelleDateLongue(contraintes.debut)}`,
+    `Jour 1 du programme : ${libelleDateLongue(contraintes.debut)}`,
     `Nombre de personnes : ${contraintes.personnes}`,
     `Budget pour la semaine : ${contraintes.budget} €`,
     `Régime et allergies : ${contraintes.regime.trim() || "aucun"}`,
-    `Temps maximal par repas : ${contraintes.tempsMax} minutes`,
-    `Repas à prévoir : ${contraintes.midi ? "le midi et le soir (14 repas)" : "le soir uniquement (7 repas)"}`,
+    `Temps de préparation maximal par repas : ${contraintes.tempsMax} minutes`,
+    `Créneaux à prévoir (${contraintes.creneaux.length} repas, aucun autre) : ${listeCreneaux(contraintes)}`,
     "",
     "Contenu du frigo :",
     '"""',

@@ -61,12 +61,13 @@ function CarteRepas({ repas }: { repas: RepasEnregistre }) {
   );
 }
 
-// Les sept jours de la semaine, avec le ou les repas de chacun
+// Les jours du programme qui ont au moins un repas. Quand la semaine mêle midis et soirs,
+// les midis restent dans la colonne de gauche et les soirs dans celle de droite, comme un planning.
 export default function GrilleRepas({ repas, debut }: { repas: RepasEnregistre[]; debut: string }) {
-  const jours = [1, 2, 3, 4, 5, 6, 7].map((jour) => ({
-    jour,
-    repas: repas.filter((r) => r.jour === jour),
-  }));
+  const jours = [1, 2, 3, 4, 5, 6, 7]
+    .map((jour) => ({ jour, repas: repas.filter((r) => r.jour === jour) }))
+    .filter(({ repas: repasDuJour }) => repasDuJour.length > 0);
+  const deuxColonnes = repas.some((r) => r.moment === "midi") && repas.some((r) => r.moment === "soir");
 
   return (
     <ol className="border-t-2 border-filet">
@@ -76,9 +77,11 @@ export default function GrilleRepas({ repas, debut }: { repas: RepasEnregistre[]
           className="grid gap-3 border-b border-filet-doux py-5 md:grid-cols-[11rem_1fr] md:gap-6"
         >
           <h3 className="archivo-large text-xl font-extrabold md:pt-3">{libelleJour(debut, jour)}</h3>
-          <div className={`grid items-start gap-3 ${repasDuJour.length > 1 ? "lg:grid-cols-2" : ""}`}>
+          <div className={`grid items-start gap-3 ${deuxColonnes ? "lg:grid-cols-2" : ""}`}>
             {repasDuJour.map((r) => (
-              <CarteRepas key={r.id} repas={r} />
+              <div key={r.id} className={deuxColonnes ? (r.moment === "midi" ? "lg:col-start-1" : "lg:col-start-2") : ""}>
+                <CarteRepas repas={r} />
+              </div>
             ))}
           </div>
         </li>
