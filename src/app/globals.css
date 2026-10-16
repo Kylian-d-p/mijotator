@@ -1,0 +1,325 @@
+@import "tailwindcss";
+
+/*
+ * Revizator : l'univers d'un cahier de révision parascolaire.
+ * Papier blanc, encre noire et trois encres quadri, chacune avec un seul rôle :
+ * cyan = savoir (« L'essentiel »), magenta = auto-test (« Je me teste »),
+ * jaune = surligneur (sélection, termes clés, signal d'état).
+ */
+:root {
+  --papier: #ffffff;
+  --papier-2: #f5f5f7;
+  --encre: #16161d;
+  --encre-2: #4a4a57;
+  --encre-3: #6b6b78;
+  --filet: #16161d;
+  --filet-doux: #dcdce2;
+  --bordure-champ: #8a8a96;
+
+  --essentiel: #00a3e0;
+  --essentiel-pale: #e6f6fc;
+  --essentiel-fonce: #0074a6;
+
+  --teste: #e5007d;
+  --teste-pale: #fde7f2;
+  --teste-fonce: #b00060;
+
+  --surligneur: #ffe500;
+  --surligneur-pale: #fff4a3;
+}
+
+@theme inline {
+  --color-papier: var(--papier);
+  --color-papier-2: var(--papier-2);
+  --color-encre: var(--encre);
+  --color-encre-2: var(--encre-2);
+  --color-encre-3: var(--encre-3);
+  --color-filet: var(--filet);
+  --color-filet-doux: var(--filet-doux);
+  --color-bordure-champ: var(--bordure-champ);
+  --color-essentiel: var(--essentiel);
+  --color-essentiel-pale: var(--essentiel-pale);
+  --color-essentiel-fonce: var(--essentiel-fonce);
+  --color-teste: var(--teste);
+  --color-teste-pale: var(--teste-pale);
+  --color-teste-fonce: var(--teste-fonce);
+  --color-surligneur: var(--surligneur);
+  --color-surligneur-pale: var(--surligneur-pale);
+
+  --font-sans: var(--font-atkinson), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-archivo), var(--font-atkinson), ui-sans-serif, sans-serif;
+
+  --ease-sortie: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+  color-scheme: light;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--papier);
+  color: var(--encre);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  caret-color: var(--encre);
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--surligneur);
+  color: var(--encre);
+}
+
+/* Les champs (.champ) ont leur propre focus, sans halo jaune */
+:focus-visible:not(.champ) {
+  outline: 2px solid var(--encre);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px var(--surligneur);
+}
+
+a {
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1.5px;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+@layer components {
+  .bouton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0 1.25rem;
+    border: 2px solid var(--encre);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      transform 220ms var(--ease-sortie),
+      box-shadow 220ms var(--ease-sortie),
+      background-color 150ms ease,
+      color 150ms ease;
+  }
+
+  .bouton-principal {
+    background: var(--encre);
+    color: var(--papier);
+  }
+
+  .bouton-principal:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -10px rgb(22 22 29 / 0.6);
+  }
+
+  .bouton-principal:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  .bouton-secondaire {
+    background: var(--papier);
+    color: var(--encre);
+  }
+
+  .bouton-secondaire:hover:not(:disabled) {
+    background: var(--surligneur);
+  }
+
+  .bouton:disabled {
+    background: var(--papier-2);
+    border-color: var(--filet-doux);
+    color: var(--encre-3);
+    cursor: not-allowed;
+  }
+
+  .champ {
+    display: block;
+    width: 100%;
+    border: 1.5px solid var(--bordure-champ);
+    background: var(--papier);
+    padding: 0.75rem 0.9rem;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--encre);
+    transition:
+      border-color 150ms ease,
+      box-shadow 200ms var(--ease-sortie);
+  }
+
+  .champ::placeholder {
+    color: var(--encre-3);
+  }
+
+  .champ:hover {
+    border-color: var(--encre-2);
+  }
+
+  /* Focus des champs : trait d'encre plus épais, sans halo jaune */
+  .champ:focus-visible {
+    outline: none;
+    border-color: var(--encre);
+    box-shadow: 0 0 0 1px var(--encre);
+  }
+
+  .bandeau {
+    font-family: var(--font-display);
+    font-variation-settings: "wdth" 72;
+    font-weight: 800;
+    font-size: 1.125rem;
+    letter-spacing: 0.06em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+}
+
+/* Barres de défilement dans les tons du papier */
+* {
+  scrollbar-color: var(--bordure-champ) transparent;
+  scrollbar-width: thin;
+}
+
+/* Largeurs d'Archivo (axe wdth) */
+.archivo-etroit {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 72;
+}
+
+.archivo-large {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 112;
+}
+
+/* Chiffres d'interface (dates, compteurs) en Archivo, sans le zéro barré d'Atkinson */
+.chiffres {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Puce carrée des listes de « L'essentiel » */
+.puce-essentiel > li {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.puce-essentiel > li::before {
+  content: "";
+  position: absolute;
+  left: 0.15rem;
+  top: 0.62em;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--essentiel);
+}
+
+/* Surligneur : un trait jaune qui passe derrière le texte */
+.surligne {
+  background-image: linear-gradient(
+    transparent 52%,
+    var(--surligneur) 52%,
+    var(--surligneur) 92%,
+    transparent 92%
+  );
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
+  transition: background-size 380ms var(--ease-sortie);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.surligne-toujours,
+a:hover .surligne,
+a:focus-visible .surligne {
+  background-size: 100% 100%;
+}
+
+.surligne-toujours {
+  background-image: linear-gradient(
+    transparent 50%,
+    var(--surligneur-pale) 50%,
+    var(--surligneur-pale) 94%,
+    transparent 94%
+  );
+}
+
+/* Points de conduite du sommaire */
+.points-conduite {
+  background-image: radial-gradient(circle, var(--encre-3) 1px, transparent 1.4px);
+  background-size: 8px 4px;
+  background-repeat: repeat-x;
+  background-position: left bottom 0.42em;
+}
+
+/* Lignes de texte en attente pendant la génération */
+@keyframes respiration {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.ligne-attente {
+  animation: respiration 1.6s ease-in-out infinite;
+}
+
+/* Corrigé tête-bêche : il pivote pour se lire (au geste seulement) */
+.corrige {
+  transform: rotate(180deg);
+}
+
+.corrige[data-anime="true"] {
+  transition:
+    transform 700ms var(--ease-sortie),
+    color 400ms ease;
+}
+
+.corrige[data-retourne="true"] {
+  transform: rotate(0deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .corrige,
+  .surligne {
+    transition: none;
+  }
+
+  .ligne-attente {
+    animation: none;
+  }
+}
+
+@media print {
+  .sans-impression {
+    display: none !important;
+  }
+
+  .corrige {
+    transform: rotate(180deg) !important;
+    color: var(--encre-2) !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body {
+    font-size: 11pt;
+  }
+}

@@ -1,0 +1,353 @@
+import "server-only";
+import { redis } from "@/lib/limitation";
+import { qstash } from "@/lib/qstash";
+import type { Controle } from "@/lib/statut";
+import { creerClientAdmin } from "@/lib/supabase/admin";
+
+const controleVercel: Controle = {
+  service: "Vercel",
+  description: "Hébergement et fonctions serverless",
+  verifier: async () => {
+    const environnement = process.env.VERCEL_ENV ?? "local";
+    const region = process.env.VERCEL_REGION ?? "poste du développeur";
+    const commit = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "aucun";
+    return `Environnement : ${environnement} · Région : ${region} · Commit : ${commit}`;
+  },
+};
+
+const controleIA: Controle = {
+  service: "Modèle d'IA",
+  description: "Génération des fiches (API compatible OpenAI)",
+  verifier: async () => {
+    const baseUrl = process.env.AI_BASE_URL;
+    const apiKey = process.env.AI_API_KEY;
+    const model = process.env.AI_MODEL;
+
+    if (!baseUrl || !apiKey || !model) {
+      throw new Error("Variables AI_BASE_URL, AI_API_KEY ou AI_MODEL manquantes");
+    }
+
+    const reponse = await fetch(`${baseUrl}/models`, {
+      headers: { Authorization: `Bearer ${apiKey}` },
+      cache: "no-store",
+    });
+
+    if (!reponse.ok) {
+      throw new Error(`L'API a répondu avec le statut ${reponse.status}`);
+    }
+
+    const donnees = await reponse.json();
+    const modeleDisponible = donnees.data?.some(
+      (m: { id: string }) => m.id === model
+    );
+
+    if (!modeleDisponible) {
+      throw new Error(`Le modèle ${model} n'est pas disponible chez ce fournisseur`);
+    }
+
+    return `Modèle ${model} disponible sur ${new URL(baseUrl).host}`;
+  },
+};
+
+export const controleBase: Controle = {
+  service: "Supabase Database",
+  description: "Base de données des fiches",
+  verifier: async () => {
+    const supabase = creerClientAdmin();
+    const { count, error } = await supabase
+      .from("fiches")
+      .select("id", { count: "exact", head: true });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return `${count ?? 0} fiche(s) enregistrée(s)`;
+  },
+};
+
+const controleAuth: Controle = {
+  service: "Supabase Auth",
+  description: "Connexion des utilisateurs",
+  verifier: async () => {
+    const supabase = creerClientAdmin();
+    const { error } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1 });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return "Service d'authentification joignable";
+  },
+};
+
+const controleStockage: Controle = {
+  service: "Supabase Storage",
+  description: "Stockage des cours en PDF",
+  verifier: async () => {
+    const supabase = creerClientAdmin();
+    const { data, error } = await supabase.storage.getBucket("cours");
+
+    if (error || !data) {
+      throw new Error(error?.message ?? "Bucket « cours » introuvable");
+    }
+
+    if (data.public) {
+      throw new Error("Le bucket « cours » est public : les cours sont exposés à tous");
+    }
+
+    const limiteMo = data.file_size_limit
+      ? `${Math.round(data.file_size_limit / 1024 / 1024)} Mo`
+      : "aucune";
+
+    return `Bucket « cours » privé · Taille maximale : ${limiteMo}`;
+  },
+};
+
+const controleRedis: Controle = {
+  service: "Upstash Redis",
+  description: "Limitation du nombre de générations",
+  verifier: async () => {
+    const reponse = await redis.ping();
+
+    if (reponse !== "PONG") {
+      throw new Error(`Réponse inattendue : ${reponse}`);
+    }
+
+    const nombreCles = await redis.dbsize();
+    return `Base joignable · ${nombreCles} clé(s) en mémoire`;
+  },
+};
+
+const controleQStash: Controle = {
+  service: "Upstash QStash",
+  description: "File de messages des générations",
+  verifier: async () => {
+    if (!process.env.QSTASH_URL || !process.env.QSTASH_TOKEN) {
+      throw new Error("Variables QSTASH_URL ou QSTASH_TOKEN manquantes");
+    }
+
+    if (!process.env.APP_URL) {
+      throw new Error("Variable APP_URL manquante : QStash ne saurait pas où livrer les messages");
+    }
+
+    if (!process.env.QSTASH_CURRENT_SIGNING_KEY || !process.env.QSTASH_NEXT_SIGNING_KEY) {
+      throw new Error("Clés de signature manquantes : le worker refuserait tous les messages");
+    }
+
+    await qstash.schedules.list();
+
+    return `Service joignable · Destination : ${process.env.APP_URL}`;
+  },
+};
+
+const controleRealtime: Controle = {
+  service: "Supabase Realtime",
+  description: "Notifications en temps réel",
+  verifier: async () => {
+    const supabase = creerClientAdmin();
+    const canal = supabase.channel(`controle-${Date.now()}`);
+
+    try {
+      await new Promise<void>((resolve, reject) => {
+        canal.subscribe((statut, erreur) => {
+          if (statut === "SUBSCRIBED") resolve();
+          if (statut === "CHANNEL_ERROR" || statut === "TIMED_OUT") {
+            reject(erreur ?? new Error(`Connexion impossible (${statut})`));
+          }
+        });
+      });
+
+      return "Connexion WebSocket établie";
+    } finally {
+      await supabase.removeChannel(canal);
+      supabase.realtime.disconnect();
+    }
+  },
+};
+
+const controleEmail: Controle = {
+  service: "Resend",
+  description: "Envoi des notifications par e-mail",
+  verifier: async () => {
+    const cle = process.env.RESEND_API_KEY;
+    if (!cle) {
+      throw new Error("Variable RESEND_API_KEY manquante");
+    }
+
+    const reponse = await fetch("https://api.resend.com/domains", {
+      headers: { Authorization: `Bearer ${cle}` },
+      cache: "no-store",
+    });
+
+    if (reponse.ok) {
+      return "Clé valide (accès complet : préférez une clé limitée à l'envoi)";
+    }
+
+    const corps = await reponse.json().catch(() => ({}));
+
+    // Une clé limitée à l'envoi est reconnue par Resend, mais refusée sur cette route :
+    // c'est la preuve qu'elle est valide, avec le minimum de droits
+    if (corps.name === "restricted_api_key") {
+      return "Clé valide, limitée à l'envoi d'e-mails";
+    }
+
+    throw new Error(corps.message ?? `L'API a répondu avec le statut ${reponse.status}`);
+  },
+};
+
+const controleSentry: Controle = {
+  service: "Sentry",
+  description: "Suivi des erreurs",
+  verifier: async () => {
+    const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
+    if (!dsn) {
+      throw new Error("Variable NEXT_PUBLIC_SENTRY_DSN manquante : les erreurs ne sont pas collectées");
+    }
+
+    const adresse = new URL(dsn);
+    const environnement = process.env.VERCEL_ENV ?? "local";
+
+    return `DSN configuré · Envoi vers ${adresse.host} · Environnement : ${environnement}`;
+  },
+};
+
+const STATUTS_UPTIMEROBOT: Record<number, string> = {
+  0: "en pause",
+  1: "pas encore vérifié",
+  2: "opérationnel",
+  8: "probablement en panne",
+  9: "en panne",
+};
+
+const controleUptimeRobot: Controle = {
+  service: "UptimeRobot",
+  description: "Surveillance externe de disponibilité",
+  verifier: async () => {
+    const cle = process.env.UPTIMEROBOT_API_KEY;
+    if (!cle) {
+      throw new Error("Variable UPTIMEROBOT_API_KEY manquante");
+    }
+
+    const reponse = await fetch("https://api.uptimerobot.com/v2/getMonitors", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        api_key: cle,
+        format: "json",
+        custom_uptime_ratios: "30",
+      }),
+      cache: "no-store",
+    });
+
+    const donnees = await reponse.json();
+
+    if (donnees.stat !== "ok") {
+      throw new Error(donnees.error?.message ?? "Réponse inattendue de l'API UptimeRobot");
+    }
+
+    const moniteur = donnees.monitors?.[0];
+    if (!moniteur) {
+      throw new Error("Aucun moniteur configuré");
+    }
+
+    const etat = STATUTS_UPTIMEROBOT[moniteur.status] ?? "statut inconnu";
+    if (moniteur.status === 8 || moniteur.status === 9) {
+      throw new Error(`Le moniteur « ${moniteur.friendly_name} » signale une panne`);
+    }
+
+    return `Moniteur ${etat} · Disponibilité sur 30 jours : ${moniteur.custom_uptime_ratio} %`;
+  },
+};
+
+const controleLangfuse: Controle = {
+  service: "Langfuse",
+  description: "Observabilité des appels au modèle d'IA",
+  verifier: async () => {
+    const baseUrl = process.env.LANGFUSE_BASE_URL;
+    const clePublique = process.env.LANGFUSE_PUBLIC_KEY;
+    const cleSecrete = process.env.LANGFUSE_SECRET_KEY;
+
+    if (!baseUrl || !clePublique || !cleSecrete) {
+      throw new Error("Variables Langfuse manquantes : les appels au modèle ne sont pas tracés");
+    }
+
+    const sante = await fetch(`${baseUrl}/api/public/health`, { cache: "no-store" });
+    if (!sante.ok) {
+      throw new Error(`Le service a répondu avec le statut ${sante.status}`);
+    }
+
+    const authentification = Buffer.from(`${clePublique}:${cleSecrete}`).toString("base64");
+    const projets = await fetch(`${baseUrl}/api/public/projects`, {
+      headers: { Authorization: `Basic ${authentification}` },
+      cache: "no-store",
+    });
+
+    if (!projets.ok) {
+      throw new Error(`Clés refusées (statut ${projets.status})`);
+    }
+
+    const donnees = await projets.json();
+    const nomProjet = donnees.data?.[0]?.name ?? "inconnu";
+
+    return `Service joignable · Projet « ${nomProjet} »`;
+  },
+};
+
+const VARIABLES_REQUISES = [
+  "AI_BASE_URL",
+  "AI_API_KEY",
+  "AI_MODEL",
+  "NEXT_PUBLIC_SUPABASE_URL",
+  "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+  "SUPABASE_SECRET_KEY",
+  "ADMIN_EMAILS",
+  "UPSTASH_REDIS_REST_URL",
+  "UPSTASH_REDIS_REST_TOKEN",
+  "APP_URL",
+  "QSTASH_URL",
+  "QSTASH_TOKEN",
+  "QSTASH_CURRENT_SIGNING_KEY",
+  "QSTASH_NEXT_SIGNING_KEY",
+  "RESEND_API_KEY",
+  "NEXT_PUBLIC_SENTRY_DSN",
+  "UPTIMEROBOT_API_KEY",
+  "LANGFUSE_BASE_URL",
+  "LANGFUSE_PUBLIC_KEY",
+  "LANGFUSE_SECRET_KEY",
+];
+
+const controleSecrets: Controle = {
+  service: "Infisical",
+  description: "Gestion centralisée des secrets",
+  verifier: async () => {
+    const manquantes = VARIABLES_REQUISES.filter((nom) => !process.env[nom]);
+
+    if (manquantes.length > 0) {
+      throw new Error(`Variables manquantes : ${manquantes.join(", ")}`);
+    }
+
+    const reponse = await fetch("https://eu.infisical.com/api/status", { cache: "no-store" });
+    if (!reponse.ok) {
+      throw new Error(`Le service a répondu avec le statut ${reponse.status}`);
+    }
+
+    return `Service joignable · ${VARIABLES_REQUISES.length} variables configurées`;
+  },
+};
+
+export const CONTROLES: Controle[] = [
+  controleVercel,
+  controleIA,
+  controleBase,
+  controleAuth,
+  controleStockage,
+  controleRedis,
+  controleQStash,
+  controleRealtime,
+  controleEmail,
+  controleSentry,
+  controleUptimeRobot,
+  controleLangfuse,
+  controleSecrets,
+];
