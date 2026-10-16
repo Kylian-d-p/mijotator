@@ -105,7 +105,7 @@ export default async function DetailSemaine({
       <div className="mx-auto max-w-6xl px-5 pt-8 pb-20 sm:px-8 sm:pt-10">
         {prete && <GrilleRepas repas={repas} debut={semaine.debut} />}
 
-        {semaine.statut === "en_attente" && <AttenteSemaine id={semaine.id} />}
+        {semaine.statut === "en_attente" && <AttenteSemaine id={semaine.id} creneaux={semaine.creneaux} debut={semaine.debut} />}
 
         {semaine.statut === "erreur" && (
           <div role="alert" className="alerte max-w-3xl sm:px-6 sm:py-5">

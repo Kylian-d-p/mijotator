@@ -2,23 +2,21 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import Icone from "@/components/Icone";
 
-// Le couvercle de la page : un aplat d'émail uni pleine largeur, fermé par un bord en fonte.
-// Flamme pour tout ce qui touche aux repas, basilic pour les courses.
+// Le couvercle de la page : un aplat basilic uni pleine largeur, fermé par un bord en fonte.
+// Le même sur toutes les pages.
 export default function BandeauPage({
   titre,
-  email = "flamme",
   retour,
   actions,
   children,
 }: {
   titre: ReactNode;
-  email?: "flamme" | "basilic";
-  retour?: { href: string; libelle: string };
+  retour?: { href: string; libelle: ReactNode };
   actions?: ReactNode;
   children?: ReactNode;
 }) {
   return (
-    <div className={`bandeau-email bandeau-${email}`}>
+    <div className="bandeau-email">
       <div className="mx-auto max-w-6xl px-5 pt-4 pb-8 sm:px-8 sm:pt-6 sm:pb-11">
         {retour && (
           <Link

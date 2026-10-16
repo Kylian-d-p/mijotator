@@ -221,7 +221,7 @@ export default function FormulaireSemaine({ valeursInitiales, children }: { vale
             placeholder={"Un produit par ligne, avec sa quantité si possible :\n3 courgettes\n200 g de lardons\n1 kg de riz"}
             aria-describedby="frigo-aide"
             disabled={envoi}
-            className="champ champ-givre mt-2 h-40 resize-y"
+            className="champ mt-2 h-40 resize-y"
           />
           <p id="frigo-aide" className="mt-2 text-sm text-givre-fonce">
             Ces produits sont utilisés en priorité, puis retirés de la liste de courses.

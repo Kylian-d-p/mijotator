@@ -48,7 +48,6 @@ export default async function Courses({
   return (
     <main>
       <BandeauPage
-        email="basilic"
         titre="Liste de courses"
         retour={{ href: `/semaines/${id}`, libelle: titreSemaine(semaine.debut) }}
         actions={articles.length > 0 && <BoutonImprimer className="bouton-clair" />}

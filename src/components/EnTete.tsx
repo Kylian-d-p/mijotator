@@ -5,7 +5,7 @@ import NavigationPrincipale from "@/components/NavigationPrincipale";
 import SentryUtilisateur from "@/components/SentryUtilisateur";
 import { creerClientServeur } from "@/lib/supabase/server";
 
-// En-tête dans l'émail du bandeau de la page : flamme, ou basilic sur la liste de courses
+// En-tête dans l'émail du bandeau de la page : basilic sur tout le site
 export default async function EnTete() {
   const supabase = await creerClientServeur();
   const {

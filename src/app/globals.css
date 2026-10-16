@@ -3,8 +3,8 @@
 /*
  * Mijotator : l'univers de la cocotte en fonte émaillée.
  * Chaque page est une cocotte : un bandeau en émail coloré (le couvercle), un bord en fonte
- * noire, puis l'intérieur blanc où l'on lit. Chaque émail a un seul rôle :
- * flamme = repas, basilic = courses, soleil = étape en cours et alertes, givre = frigo.
+ * noire, puis l'intérieur blanc où l'on lit. Chaque émail a un seul rôle : basilic = couvercle
+ * des pages et courses, flamme = repas, soleil = étape en cours et alertes, givre = frigo.
  */
 :root {
   --email: #ffffff;
@@ -227,24 +227,10 @@ p {
     cursor: not-allowed;
   }
 
-  /* Le frigo est un champ givré */
-  .champ-givre {
-    background: var(--givre);
-    border-color: var(--givre-bord);
-  }
-
-  .champ-givre:hover:not(:disabled) {
-    border-color: var(--givre-fonce);
-  }
-
-  .champ-givre::placeholder {
-    color: #4f6f80;
-  }
-
   /*
-   * Bandeau de tête : le couvercle de la page, un aplat d'émail uni fermé par le bord en fonte.
-   * L'en-tête prend la même couleur, pour que le haut de page soit un seul couvercle.
-   * Texte en fonte sur flamme, en blanc sur basilic.
+   * Bandeau de tête : le couvercle de la page, un aplat basilic uni fermé par le bord en fonte,
+   * le même sur tout le site. L'en-tête prend la même couleur, pour que le haut de page soit
+   * un seul couvercle. Texte en blanc.
    */
   .bandeau-email {
     position: relative;
@@ -252,13 +238,7 @@ p {
   }
 
   .entete,
-  .bandeau-flamme {
-    background: var(--flamme);
-    color: var(--fonte);
-  }
-
-  .bandeau-basilic,
-  body:has(.bandeau-basilic) .entete {
+  .bandeau-email {
     background: var(--basilic);
     color: var(--email);
   }
@@ -267,10 +247,6 @@ p {
   .entete {
     position: relative;
     z-index: 1;
-    box-shadow: 0 1px 0 var(--flamme);
-  }
-
-  body:has(.bandeau-basilic) .entete {
     box-shadow: 0 1px 0 var(--basilic);
   }
 
@@ -286,6 +262,19 @@ p {
 
   .trace {
     background: color-mix(in srgb, currentColor 16%, transparent);
+  }
+
+  /*
+   * Texte fantôme des squelettes : un texte modèle invisible garde la taille, la hauteur de ligne
+   * et les retours à la ligne du vrai contenu ; seule sa silhouette apparaît, ligne par ligne.
+   */
+  .fantome {
+    -webkit-text-fill-color: transparent;
+    background: color-mix(in srgb, currentColor 16%, transparent);
+    border-radius: 0.3em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    user-select: none;
   }
 
   /* Puits gris clair : panneaux d'aide et états vides */
@@ -388,10 +377,10 @@ a:focus-visible .marque-couvercle {
   box-shadow: 0 16px 20px -14px rgb(30 26 23 / 0.9);
 }
 
-/* Ouvert, le couvercle reste soulevé au-dessus de l'intérieur, son ombre portée plus profonde */
+/* Ouvert, le couvercle se pose à plat au-dessus de l'intérieur, sans ombre portée sur lui */
 .repas[open] > summary {
-  transform: translateY(-6px);
-  box-shadow: 0 22px 24px -16px rgb(30 26 23 / 0.95);
+  transform: none;
+  box-shadow: none;
 }
 
 /* L'intérieur s'ouvre en glissant, là où le navigateur le permet */

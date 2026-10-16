@@ -25,16 +25,14 @@ export default function NavigationPrincipale() {
               <Link
                 href={href}
                 aria-current={actif ? "page" : undefined}
-                className={`relative block rounded-lg px-1.5 py-2 text-[0.95rem] font-semibold whitespace-nowrap no-underline transition-colors min-[400px]:px-2 sm:px-3 ${
-                  actif ? "" : "hover:underline"
-                }`}
+                className="group relative block rounded-lg px-1.5 py-2 text-[0.95rem] font-semibold whitespace-nowrap no-underline min-[400px]:px-2 sm:px-3"
               >
                 {libelle}
-                {/* L'onglet actif est souligné d'un trait épais posé sur le bas de l'en-tête */}
+                {/* Un seul trait sous le libellé : plein pour l'onglet actif, estompé au survol des autres */}
                 <span
                   aria-hidden="true"
-                  className={`absolute inset-x-1.5 -bottom-3 h-1 rounded-t-full bg-current transition-transform duration-300 ease-sortie min-[400px]:inset-x-2 sm:inset-x-3 ${
-                    actif ? "scale-x-100" : "scale-x-0"
+                  className={`absolute inset-x-1.5 bottom-0.5 h-[3px] rounded-full bg-current transition-[transform,opacity] duration-300 ease-sortie min-[400px]:inset-x-2 sm:inset-x-3 ${
+                    actif ? "scale-x-100" : "scale-x-0 opacity-40 group-hover:scale-x-100"
                   }`}
                 />
               </Link>

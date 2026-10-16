@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Icone from "@/components/Icone";
 import SqueletteSemaine from "@/components/SqueletteSemaine";
+import type { Creneau } from "@/lib/semaine";
 import { creerClientNavigateur } from "@/lib/supabase/client";
 
 const DELAI_MAX_MS = 90000;
 
 // Attend en temps réel la fin de la génération, puis recharge la page côté serveur
-export default function AttenteSemaine({ id }: { id: string }) {
+export default function AttenteSemaine({ id, creneaux, debut }: { id: string; creneaux: Creneau[]; debut: string }) {
   const router = useRouter();
   const [interrompue, setInterrompue] = useState("");
 
@@ -108,7 +109,7 @@ export default function AttenteSemaine({ id }: { id: string }) {
           </span>
         </div>
       )}
-      <SqueletteSemaine />
+      <SqueletteSemaine creneaux={creneaux} debut={debut} />
     </div>
   );
 }

@@ -32,9 +32,9 @@ function CarteRepas({ repas }: { repas: RepasEnregistre }) {
         </span>
       </summary>
 
-      {/* L'intérieur de la cocotte, dans l'ombre du couvercle soulevé. Ingrédients et étapes
+      {/* L'intérieur de la cocotte, juste sous le couvercle. Ingrédients et étapes
           côte à côte seulement s'il est assez large. */}
-      <div className="@container rounded-2xl bg-email-2 shadow-[inset_0_12px_14px_-12px_rgb(30_26_23/0.4)]">
+      <div className="@container mt-1.5 rounded-2xl bg-email-2">
         <div className="grid gap-6 px-4 pt-5 pb-6 sm:px-5 @xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] @xl:gap-8">
           <div>
             <h4 className="font-bold">Ingrédients</h4>
