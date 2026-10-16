@@ -14,14 +14,14 @@ export default function LienCourses({
   return (
     <Link
       href={`/semaines/${semaineId}/courses`}
-      className="group flex w-full items-center gap-4 rounded-2xl border-b-4 border-fonte bg-basilic px-4 py-3.5 text-email no-underline shadow-[0_14px_22px_-14px_rgb(0_0_0/0.85)] transition-transform duration-200 ease-sortie hover:-translate-y-0.5 sm:w-auto sm:min-w-80 sm:px-5"
+      className="group flex w-full items-center gap-4 rounded-2xl border-b-[3px] border-fonte bg-basilic px-4 py-3.5 text-email no-underline shadow-[0_14px_22px_-14px_rgb(0_0_0/0.85)] transition-transform duration-200 ease-sortie hover:-translate-y-0.5 sm:w-auto sm:min-w-80 sm:px-5"
     >
       <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-email text-basilic">
         <Icone nom="panier" className="size-6" />
       </span>
       <span className="flex-1">
         <span className="block text-lg leading-tight font-bold">Liste de courses</span>
-        <span className="chiffres text-sm text-white/90">
+        <span className="chiffres text-sm">
           {articles === 0
             ? "Rien à acheter"
             : `${articles} article${articles > 1 ? "s" : ""} · ${coches} coché${coches > 1 ? "s" : ""}`}

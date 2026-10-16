@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import Icone from "@/components/Icone";
 
-// Le couvercle de la page : un aplat émaillé pleine largeur, fermé par un bord en fonte.
+// Le couvercle de la page : un aplat d'émail uni pleine largeur, fermé par un bord en fonte.
 // Flamme pour tout ce qui touche aux repas, basilic pour les courses.
 export default function BandeauPage({
   titre,
@@ -19,11 +19,11 @@ export default function BandeauPage({
 }) {
   return (
     <div className={`bandeau-email bandeau-${email}`}>
-      <div className="mx-auto max-w-6xl px-5 pt-7 pb-8 sm:px-8 sm:pt-10 sm:pb-11">
+      <div className="mx-auto max-w-6xl px-5 pt-4 pb-8 sm:px-8 sm:pt-6 sm:pb-11">
         {retour && (
           <Link
             href={retour.href}
-            className="sans-impression mb-5 inline-flex items-center gap-2 rounded-md font-semibold text-white/85 no-underline hover:text-email sm:mb-7"
+            className="sans-impression mb-5 inline-flex items-center gap-2 rounded-md font-semibold no-underline hover:underline sm:mb-7"
           >
             <Icone nom="retour" className="size-4" />
             {retour.libelle}

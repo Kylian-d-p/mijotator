@@ -1,5 +1,5 @@
 import Icone from "@/components/Icone";
-import { afficherQuantite, aujourdhuiAParis, libelleJour, type Repas } from "@/lib/semaine";
+import { afficherQuantite, aujourdhuiAParis, libelleJour, MOMENTS, type Repas } from "@/lib/semaine";
 
 export type RepasEnregistre = Repas & { id: string };
 
@@ -93,11 +93,11 @@ export default function GrilleRepas({ repas, debut }: { repas: RepasEnregistre[]
           <span />
           <span className="grid grid-cols-2 gap-3 font-semibold text-fonte-2">
             <span className="flex items-center gap-2">
-              <span className="size-2.5 rounded-full bg-flamme" />
+              <span className="size-2.5 rounded-[3px] bg-flamme" />
               Midi
             </span>
             <span className="flex items-center gap-2">
-              <span className="size-2.5 rounded-full bg-braise" />
+              <span className="size-2.5 rounded-[3px] bg-braise" />
               Soir
             </span>
           </span>
@@ -118,10 +118,26 @@ export default function GrilleRepas({ repas, debut }: { repas: RepasEnregistre[]
             </h3>
             <div className={`grid items-start gap-3 ${deuxColonnes ? "lg:grid-cols-2" : ""}`}>
               {repasDuJour.map((r) => (
-                <div key={r.id} className={deuxColonnes ? (r.moment === "midi" ? "lg:col-start-1" : "lg:col-start-2") : ""}>
+                <div
+                  key={r.id}
+                  className={deuxColonnes ? (r.moment === "midi" ? "lg:col-start-1 lg:row-start-1" : "lg:col-start-2 lg:row-start-1") : ""}
+                >
                   <CarteRepas repas={r} />
                 </div>
               ))}
+              {/* Sur deux colonnes, un moment sans repas garde sa place, comme une case vide du planning */}
+              {deuxColonnes &&
+                MOMENTS.filter((moment) => !repasDuJour.some((r) => r.moment === moment)).map((moment) => (
+                  <div
+                    key={moment}
+                    aria-hidden="true"
+                    className={`hidden min-h-[4.75rem] items-center rounded-2xl bg-email-2 px-5 text-sm text-fonte-3 lg:row-start-1 lg:flex ${
+                      moment === "midi" ? "lg:col-start-1" : "lg:col-start-2"
+                    }`}
+                  >
+                    {moment === "midi" ? "Pas de midi prévu" : "Pas de soir prévu"}
+                  </div>
+                ))}
             </div>
           </li>
         );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Icone from "@/components/Icone";
 import {
   creneau,
   dateValide,
@@ -17,8 +18,9 @@ import {
 
 const memes = (a: Creneau[], b: Creneau[]) => a.length === b.length && a.every((c) => b.includes(c));
 
-// Planning de la semaine en plaque de cuisson : une colonne par jour du programme, une rangée
-// par moment, un feu par repas. Cocher un repas pose un couvercle sur son feu.
+// Planning de la semaine : une colonne par jour du programme, une rangée par moment, une case
+// par repas. Une case cochée prend l'émail de son repas, comme dans la grille de la semaine :
+// flamme le midi, braise le soir.
 export default function SelecteurCreneaux({
   debut,
   valeur,
@@ -30,7 +32,7 @@ export default function SelecteurCreneaux({
   onChange: (creneaux: Creneau[]) => void;
   disabled?: boolean;
 }) {
-  // Seuls les couvercles posés par l'utilisateur s'animent, pas ceux du chargement de la page
+  // Seules les cases cochées par l'utilisateur s'animent, pas celles du chargement de la page
   const [poses, setPoses] = useState<Creneau[]>([]);
   const dateConnue = dateValide(debut);
 
@@ -81,12 +83,11 @@ export default function SelecteurCreneaux({
               onClick={() => changer(creneaux)}
               aria-pressed={actif}
               disabled={disabled}
-              className={`min-h-10 cursor-pointer rounded-full px-4 text-[0.95rem] font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
-                actif
-                  ? "bg-fonte text-email"
-                  : "bg-email text-fonte shadow-[inset_0_0_0_2px_var(--fonte)] hover:bg-email-2"
+              className={`inline-flex min-h-10 cursor-pointer items-center gap-1.5 rounded-full px-4 text-[0.95rem] font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                actif ? "bg-flamme-pale text-fonte" : "bg-email-2 text-fonte-2 hover:bg-email-3 hover:text-fonte"
               }`}
             >
+              {actif && <Icone nom="valide" className="size-4 text-braise" />}
               {libelle}
             </button>
           );
@@ -94,7 +95,7 @@ export default function SelecteurCreneaux({
       </div>
 
       <div
-        className={`mt-3 grid grid-cols-[2.75rem_repeat(7,minmax(0,1fr))] gap-x-0.5 gap-y-1 rounded-2xl bg-fonte p-1.5 text-email shadow-[0_14px_24px_-18px_rgb(30_26_23/0.9)] sm:grid-cols-[3.75rem_repeat(7,minmax(0,1fr))] sm:gap-x-1 sm:p-2.5 ${
+        className={`mt-3 grid grid-cols-[2.5rem_repeat(7,minmax(0,1fr))] gap-1 rounded-2xl bg-email-2 p-1.5 sm:grid-cols-[3.25rem_repeat(7,minmax(0,1fr))] sm:gap-1.5 sm:p-2.5 ${
           disabled ? "opacity-60" : ""
         }`}
       >
@@ -105,16 +106,17 @@ export default function SelecteurCreneaux({
             <div
               key={jour}
               aria-hidden="true"
-              className={`flex flex-col items-center justify-center gap-0.5 rounded-lg px-0.5 py-2 text-center leading-none ${
-                weekEnd(jour) ? "bg-white/[0.07]" : ""
+              className={`flex flex-col items-center justify-center gap-1 rounded-lg px-0.5 py-1.5 text-center leading-none ${
+                weekEnd(jour) ? "bg-email-3" : ""
               }`}
             >
-              <span className="text-[0.95rem] font-extrabold sm:text-base">J{jour}</span>
-              {dateConnue && (
+              {dateConnue ? (
                 <>
-                  <span className="text-[0.8125rem] text-white/65">{semaine}</span>
-                  <span className="chiffres text-[0.8125rem] font-semibold">{date}</span>
+                  <span className="text-[0.8125rem] text-fonte-2">{semaine}</span>
+                  <span className="chiffres text-[0.95rem] font-bold sm:text-base">{date}</span>
                 </>
+              ) : (
+                <span className="text-[0.95rem] font-bold sm:text-base">J{jour}</span>
               )}
             </div>
           );
@@ -122,7 +124,10 @@ export default function SelecteurCreneaux({
 
         {MOMENTS.map((moment) => (
           <div key={moment} className="contents">
-            <div aria-hidden="true" className="flex items-center pl-1.5 text-[0.8125rem] font-semibold text-white/70 sm:pl-2.5 sm:text-sm">
+            <div
+              aria-hidden="true"
+              className="flex items-center pl-1 text-[0.8125rem] font-semibold text-fonte-2 sm:pl-1.5 sm:text-sm"
+            >
               {moment === "midi" ? "Midi" : "Soir"}
             </div>
             {JOURS.map((jour) => {
@@ -132,9 +137,15 @@ export default function SelecteurCreneaux({
               return (
                 <label
                   key={c}
-                  className={`group relative flex min-h-12 items-center justify-center rounded-xl transition-colors duration-150 has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-0 has-[:focus-visible]:outline-flamme sm:min-h-14 ${
-                    disabled ? "cursor-not-allowed" : "cursor-pointer hover:bg-white/[0.06]"
-                  } ${weekEnd(jour) ? "bg-white/[0.04]" : ""}`}
+                  className={`group relative flex h-11 items-center justify-center rounded-xl transition-colors duration-150 has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-1 has-[:focus-visible]:outline-flamme sm:h-12 ${
+                    disabled ? "cursor-not-allowed" : "cursor-pointer"
+                  } ${
+                    coche
+                      ? `border-b-[3px] border-fonte shadow-[0_6px_10px_-8px_rgb(30_26_23/0.8)] ${
+                          moment === "midi" ? "bg-flamme text-fonte" : "bg-braise text-email"
+                        }`
+                      : `bg-email text-bord ${disabled ? "" : "hover:bg-flamme-pale hover:text-braise"}`
+                  }`}
                 >
                   <input
                     type="checkbox"
@@ -147,21 +158,9 @@ export default function SelecteurCreneaux({
                     {nomJour}, {moment}
                   </span>
                   {coche ? (
-                    <span
-                      aria-hidden="true"
-                      className={`flex size-7 items-center justify-center rounded-full bg-flamme shadow-[0_3px_6px_-2px_rgb(0_0_0/0.6)] sm:size-9 ${
-                        poses.includes(c) ? "pose" : ""
-                      }`}
-                    >
-                      <span className="size-2 rounded-full bg-fonte sm:size-2.5" />
-                    </span>
+                    <Icone nom="valide" className={`size-5 ${poses.includes(c) ? "pose" : ""}`} />
                   ) : (
-                    <span
-                      aria-hidden="true"
-                      className={`size-7 rounded-full border-2 border-[#7a716a] shadow-[inset_0_0_0_4px_var(--fonte),inset_0_0_0_5.5px_#4a433d] transition-colors duration-200 sm:size-9 ${
-                        disabled ? "" : "group-hover:border-flamme"
-                      }`}
-                    />
+                    <Icone nom="plus" className="size-4" />
                   )}
                 </label>
               );

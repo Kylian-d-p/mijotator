@@ -5,9 +5,9 @@ export default function ChargementSemaines() {
         Chargement de vos semaines…
       </p>
       <div className="bandeau-email bandeau-flamme">
-        <div className="mx-auto max-w-6xl px-5 pt-7 pb-8 sm:px-8 sm:pt-10 sm:pb-11">
+        <div className="mx-auto max-w-6xl px-5 pt-4 pb-8 sm:px-8 sm:pt-6 sm:pb-11">
           <h1 className="titre text-[clamp(2.5rem,7vw,4.5rem)]">Mes semaines</h1>
-          <div aria-hidden="true" className="ligne-attente mt-4 h-5 w-64 max-w-full rounded-md bg-white/25" />
+          <div aria-hidden="true" className="ligne-attente mt-4 h-5 w-64 max-w-full rounded-md trace" />
         </div>
       </div>
       <div aria-hidden="true" className="mx-auto max-w-6xl space-y-1 px-5 pt-8 pb-20 sm:px-8 sm:pt-10">

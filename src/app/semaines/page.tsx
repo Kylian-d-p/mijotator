@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import BandeauPage from "@/components/BandeauPage";
 import Icone from "@/components/Icone";
-import MiniPlaque from "@/components/MiniPlaque";
+import MiniPlanning from "@/components/MiniPlanning";
 import SommaireSemaines, { type LigneSemaine } from "@/components/SommaireSemaines";
 import { creerClientServeur } from "@/lib/supabase/server";
 
@@ -52,7 +52,9 @@ export default async function ListeSemaines() {
 
         {semaines && semaines.length === 0 && (
           <div className="puits grid max-w-3xl items-center gap-6 p-6 sm:grid-cols-[9rem_1fr] sm:gap-8 sm:p-8">
-            <MiniPlaque className="w-36 sm:w-full" />
+            <div className="w-36 rounded-2xl bg-email p-3 sm:w-full">
+              <MiniPlanning creneaux={[]} />
+            </div>
             <div>
               <h2 className="titre-moyen text-2xl">Aucune semaine pour l&apos;instant.</h2>
               <p className="mt-2 text-lg text-fonte-2">

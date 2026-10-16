@@ -26,14 +26,14 @@ export default function NavigationPrincipale() {
                 href={href}
                 aria-current={actif ? "page" : undefined}
                 className={`relative block rounded-lg px-1.5 py-2 text-[0.95rem] font-semibold whitespace-nowrap no-underline transition-colors min-[400px]:px-2 sm:px-3 ${
-                  actif ? "text-email" : "text-white/70 hover:text-email"
+                  actif ? "" : "hover:underline"
                 }`}
               >
                 {libelle}
-                {/* L'onglet actif s'allume d'un trait de flamme posé sur le bas de l'en-tête */}
+                {/* L'onglet actif est souligné d'un trait épais posé sur le bas de l'en-tête */}
                 <span
                   aria-hidden="true"
-                  className={`absolute inset-x-1.5 -bottom-[14px] h-1 rounded-t-full bg-flamme transition-transform duration-300 ease-sortie min-[400px]:inset-x-2 sm:inset-x-3 ${
+                  className={`absolute inset-x-1.5 -bottom-3 h-1 rounded-t-full bg-current transition-transform duration-300 ease-sortie min-[400px]:inset-x-2 sm:inset-x-3 ${
                     actif ? "scale-x-100" : "scale-x-0"
                   }`}
                 />

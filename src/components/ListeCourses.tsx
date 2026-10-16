@@ -143,7 +143,7 @@ export default function ListeCourses({
             >
               {/* Un rayon fini s'éteint : basilic adouci, articles en retrait */}
               <div
-                className={`flex items-center justify-between gap-3 border-b-4 border-fonte px-4 py-3 transition-colors duration-300 sm:px-5 ${
+                className={`flex items-center justify-between gap-3 border-b-[3px] border-fonte px-4 py-3 transition-colors duration-300 sm:px-5 ${
                   fini ? "bg-basilic-eteint text-fonte" : "bg-basilic text-email"
                 }`}
               >

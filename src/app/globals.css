@@ -242,30 +242,50 @@ p {
   }
 
   /*
-   * Bandeau de tête : le couvercle émaillé de la page, avec un reflet en haut à gauche,
-   * l'ombré qui fonce vers le bas comme une cocotte Volcanique, puis le bord en fonte.
+   * Bandeau de tête : le couvercle de la page, un aplat d'émail uni fermé par le bord en fonte.
+   * L'en-tête prend la même couleur, pour que le haut de page soit un seul couvercle.
+   * Texte en fonte sur flamme, en blanc sur basilic.
    */
   .bandeau-email {
     position: relative;
-    color: var(--email);
     border-bottom: 4px solid var(--fonte);
-    isolation: isolate;
   }
 
+  .entete,
   .bandeau-flamme {
-    background:
-      radial-gradient(70% 140% at 8% -30%, rgb(255 255 255 / 0.12), transparent 60%),
-      linear-gradient(180deg, #d24a15 0%, #c2410f 42%, #a5350d 78%, #8e2a0c 100%);
+    background: var(--flamme);
+    color: var(--fonte);
   }
 
-  .bandeau-basilic {
-    background:
-      radial-gradient(70% 140% at 8% -30%, rgb(255 255 255 / 0.1), transparent 60%),
-      linear-gradient(180deg, #367f57 0%, #2e6b4a 45%, #24583c 80%, #1f4d35 100%);
+  .bandeau-basilic,
+  body:has(.bandeau-basilic) .entete {
+    background: var(--basilic);
+    color: var(--email);
   }
 
+  /* Recouvre la couture d'un pixel entre l'en-tête et le bandeau aux zooms fractionnaires */
+  .entete {
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 1px 0 var(--flamme);
+  }
+
+  body:has(.bandeau-basilic) .entete {
+    box-shadow: 0 1px 0 var(--basilic);
+  }
+
+  .entete :focus-visible,
   .bandeau-email :focus-visible {
     outline-color: var(--email);
+  }
+
+  /* Filet et silhouettes dans la couleur du texte de l'émail */
+  .filet-courant {
+    border-color: color-mix(in srgb, currentColor 22%, transparent);
+  }
+
+  .trace {
+    background: color-mix(in srgb, currentColor 16%, transparent);
   }
 
   /* Puits gris clair : panneaux d'aide et états vides */
@@ -305,17 +325,19 @@ p {
   font-variant-numeric: tabular-nums lining-nums;
 }
 
-/* La marque : un couvercle vu de dessus, qui se soulève au survol */
+/* La marque : le couvercle de la cocotte se soulève au survol du lien d'accueil */
 .marque-couvercle {
+  transform-box: fill-box;
+  transform-origin: 85% 100%;
   transition: transform 320ms var(--ease-pose);
 }
 
 a:hover .marque-couvercle,
 a:focus-visible .marque-couvercle {
-  transform: translateY(-3px) rotate(-12deg);
+  transform: translateY(-2px) rotate(-10deg);
 }
 
-/* Couvercle posé sur un feu du planning, avec un léger rebond */
+/* Ce qui se pose (case cochée du planning, coche d'un article), avec un léger rebond */
 @keyframes pose {
   from {
     transform: translateY(-5px) scale(0.6);
@@ -340,7 +362,7 @@ a:focus-visible .marque-couvercle {
   z-index: 1;
   list-style: none;
   border-radius: 1rem;
-  border-bottom: 4px solid var(--fonte);
+  border-bottom: 3px solid var(--fonte);
   box-shadow: 0 10px 16px -14px rgb(30 26 23 / 0.9);
   transition:
     transform 320ms var(--ease-sortie),

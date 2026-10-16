@@ -13,7 +13,7 @@ export default function SqueletteSemaine() {
             <div className="h-6 w-24 rounded-md bg-email-2" />
             <div className="h-4 w-20 rounded-md bg-email-2" />
           </div>
-          <div className="flex items-center gap-4 rounded-2xl border-b-4 border-email-3 bg-flamme-pale px-4 py-4 sm:px-5">
+          <div className="flex items-center gap-4 rounded-2xl border-b-[3px] border-email-3 bg-flamme-pale px-4 py-4 sm:px-5">
             <div className="flex-1 space-y-2">
               <div
                 className="ligne-attente h-4 rounded-full bg-flamme/30"
