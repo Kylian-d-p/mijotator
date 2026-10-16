@@ -1,10 +1,10 @@
 "use client";
 
-import { useRef, useState, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
 import Icone from "@/components/Icone";
 import SelecteurCreneaux from "@/components/SelecteurCreneaux";
 import { LIMITES, TEMPS_POSSIBLES, validerContraintes, type Creneau } from "@/lib/semaine";
+import { useRouter } from "next/navigation";
+import { useRef, useState, type ReactNode } from "react";
 
 export type ValeursFormulaire = {
   debut: string;
@@ -19,11 +19,7 @@ function Chargement() {
   return (
     <span className="flex gap-1" aria-hidden="true">
       {["bg-essentiel", "bg-teste", "bg-surligneur", "bg-papier"].map((couleur, i) => (
-        <span
-          key={couleur}
-          className={`ligne-attente size-2 ${couleur}`}
-          style={{ animationDelay: `${i * 160}ms`, animationDuration: "0.9s" }}
-        />
+        <span key={couleur} className={`ligne-attente size-2 ${couleur}`} style={{ animationDelay: `${i * 160}ms`, animationDuration: "0.9s" }} />
       ))}
     </span>
   );
@@ -38,13 +34,7 @@ function Etiquette({ htmlFor, children, facultatif }: { htmlFor: string; childre
   );
 }
 
-export default function FormulaireSemaine({
-  valeursInitiales,
-  children,
-}: {
-  valeursInitiales: ValeursFormulaire;
-  children?: ReactNode;
-}) {
+export default function FormulaireSemaine({ valeursInitiales, children }: { valeursInitiales: ValeursFormulaire; children?: ReactNode }) {
   const router = useRouter();
   const [debut, setDebut] = useState(valeursInitiales.debut);
   const [personnes, setPersonnes] = useState(String(valeursInitiales.personnes));
@@ -168,19 +158,24 @@ export default function FormulaireSemaine({
 
           <div>
             <Etiquette htmlFor="temps">Temps de préparation maximal</Etiquette>
-            <select
-              id="temps"
-              value={tempsMax}
-              onChange={(e) => setTempsMax(Number(e.target.value))}
-              disabled={envoi}
-              className="champ chiffres mt-2 cursor-pointer font-semibold disabled:bg-papier-2"
-            >
-              {TEMPS_POSSIBLES.map((minutes) => (
-                <option key={minutes} value={minutes}>
-                  {minutes} minutes par repas
-                </option>
-              ))}
-            </select>
+            <div className="relative mt-2">
+              <select
+                id="temps"
+                value={tempsMax}
+                onChange={(e) => setTempsMax(Number(e.target.value))}
+                disabled={envoi}
+                className="champ chiffres cursor-pointer appearance-none pr-12 font-semibold disabled:bg-papier-2"
+              >
+                {TEMPS_POSSIBLES.map((minutes) => (
+                  <option key={minutes} value={minutes}>
+                    {minutes} minutes par repas
+                  </option>
+                ))}
+              </select>
+              <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-encre-2">
+                <Icone nom="deroulant" />
+              </span>
+            </div>
           </div>
         </div>
 
@@ -256,12 +251,7 @@ export default function FormulaireSemaine({
         </div>
 
         {erreur && (
-          <div
-            ref={zoneErreur}
-            tabIndex={-1}
-            role="alert"
-            className="flex gap-4 bg-surligneur-pale px-5 py-4 outline-none sm:px-6"
-          >
+          <div ref={zoneErreur} tabIndex={-1} role="alert" className="flex gap-4 bg-surligneur-pale px-5 py-4 outline-none sm:px-6">
             <Icone nom="attention" className="mt-0.5 size-6 shrink-0" />
             <div>
               <p className="font-bold">La semaine n&apos;a pas pu être lancée</p>

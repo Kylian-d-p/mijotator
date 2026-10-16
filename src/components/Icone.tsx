@@ -2,6 +2,7 @@ const TRACES = {
   retour: <path d="M19 12H5m6-6-6 6 6 6" />,
   suite: <path d="M5 12h14m-6-6 6 6-6 6" />,
   plus: <path d="M12 5v14M5 12h14" />,
+  deroulant: <path d="m6 9 6 6 6-6" />,
   retourner: (
     <>
       <path d="M4 12a8 8 0 0 1 13.66-5.66L20 8.5" />
