@@ -10,9 +10,9 @@ Pour qui : celles et ceux qui font leurs courses une fois par semaine et veulent
 
 ## Adresse de production
 
-À compléter après le premier déploiement : `https://<projet>.vercel.app`
+https://mijotator.vercel.app
 
-Vidéo de démonstration : à compléter.
+Vidéo de démonstration : https://youtu.be/2LJQvZVD1WA
 
 ## Architecture
 
