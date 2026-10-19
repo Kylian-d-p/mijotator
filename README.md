@@ -143,6 +143,7 @@ npm run verifier
 | `APP_URL` | Adresse publique de l'application, où QStash livre les messages |
 | `QSTASH_URL`, `QSTASH_TOKEN`, `QSTASH_CURRENT_SIGNING_KEY`, `QSTASH_NEXT_SIGNING_KEY` | File de génération et vérification des signatures |
 | `RESEND_API_KEY` | Envoi des e-mails |
+| `RESEND_DESTINATAIRE_TEST` | Facultative. Sans domaine vérifié chez Resend, adresse du compte Resend vers laquelle toutes les notifications sont redirigées |
 | `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_AUTH_TOKEN` | Suivi des erreurs et envoi des source maps au build |
 | `UPTIMEROBOT_API_KEY` | Contrôle de la surveillance dans `/admin` |
 | `LANGFUSE_BASE_URL`, `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY` | Traces des appels au modèle |
@@ -157,8 +158,11 @@ npm run verifier
 - **Les régimes et les allergies reposent sur le modèle.** L'application rappelle de vérifier les allergènes, mais ne les contrôle pas elle-même.
 - **Le quota gratuit de Groq est partagé par tous les utilisateurs.** Au-delà de deux ou trois semaines générées par minute, les demandes attendent les nouvelles tentatives de QStash.
 - **Une liste n'est visible que par son auteur.** Il n'y a pas de partage entre les membres d'un foyer.
+- **Les e-mails partent d'un domaine de test.** Sans domaine vérifié, Resend n'envoie qu'à l'adresse du compte Resend. En production, `RESEND_DESTINATAIRE_TEST` redirige donc toutes les notifications vers cette adresse, et non vers celle de l'utilisateur.
 
 **Améliorations possibles**
+
+- Vérifier un domaine chez Resend, pour envoyer les notifications à chaque utilisateur.
 
 - Remplacer un seul repas sans regénérer la semaine.
 - Partager une semaine et sa liste au sein d'un foyer (table `foyers` et membres, RLS adaptée).

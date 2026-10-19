@@ -161,8 +161,12 @@ const controleEmail: Controle = {
       cache: "no-store",
     });
 
+    const redirection = process.env.RESEND_DESTINATAIRE_TEST
+      ? " · Envois redirigés vers l'adresse du compte Resend"
+      : "";
+
     if (reponse.ok) {
-      return "Clé valide (accès complet : préférez une clé limitée à l'envoi)";
+      return `Clé valide (accès complet : préférez une clé limitée à l'envoi)${redirection}`;
     }
 
     const corps = await reponse.json().catch(() => ({}));
@@ -170,7 +174,7 @@ const controleEmail: Controle = {
     // Une clé limitée à l'envoi est reconnue par Resend, mais refusée sur cette route :
     // c'est la preuve qu'elle est valide, avec le minimum de droits
     if (corps.name === "restricted_api_key") {
-      return "Clé valide, limitée à l'envoi d'e-mails";
+      return `Clé valide, limitée à l'envoi d'e-mails${redirection}`;
     }
 
     throw new Error(corps.message ?? `L'API a répondu avec le statut ${reponse.status}`);

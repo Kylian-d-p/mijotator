@@ -105,9 +105,13 @@ export async function envoyerNotification(notification: Notification) {
     ? `Votre ${titreMinuscule} est prête : ${lien}\n\n${semaine.texte}`
     : `La préparation de votre ${titreMinuscule} a échoué. Vous pouvez réessayer depuis l'application.`;
 
+  // Le domaine de test resend.dev n'envoie qu'à l'adresse du compte Resend : sans domaine vérifié,
+  // RESEND_DESTINATAIRE_TEST redirige toutes les notifications vers cette adresse
+  const destinataire = process.env.RESEND_DESTINATAIRE_TEST || notification.destinataire;
+
   const { error } = await resend.emails.send({
     from: EXPEDITEUR,
-    to: [notification.destinataire],
+    to: [destinataire],
     subject: sujet,
     html,
     text: texte,
