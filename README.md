@@ -12,7 +12,7 @@ Pour qui : celles et ceux qui font leurs courses une fois par semaine et veulent
 
 https://mijotator.vercel.app
 
-Vidéo de démonstration : https://youtu.be/2LJQvZVD1WA
+Vidéo de démonstration : https://youtu.be/--xJU08f1X4
 
 ## Architecture
 
